@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "213059234634",
+    "project_id": "workouttrackerv2",
+    "storage_bucket": "workouttrackerv2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:213059234634:android:1fb00bb47f1b30e15c6fb3",
+        "android_client_info": {
+          "package_name": "com.cutlerdevelopment.helensworkouts"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "213059234634-nmummvg53lrvh2l9m66tcagq1tvpf9gi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cutlerdevelopment.helensworkouts",
+            "certificate_hash": "f5b0c775e638816fbc66d12678144a757681f8c7"
+          }
+        },
+        {
+          "client_id": "213059234634-l8o83sd5kkvttiet0nljilomf7c9m3tl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC543mX6O0g7PHp9EI0200IRlmEKIsgMS0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "213059234634-l8o83sd5kkvttiet0nljilomf7c9m3tl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
