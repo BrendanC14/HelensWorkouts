@@ -1,4 +1,4 @@
-package com.cutlerdevelopment.model.saveables;
+package com.cutlerdevelopment.helensworkouts.model.saveables;
 
 public class SaveableString extends AbstractSaveableField{
     private String fieldValue;

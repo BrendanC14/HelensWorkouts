@@ -1,14 +1,16 @@
-package com.cutlerdevelopment.model.saveables;
+package com.cutlerdevelopment.helensworkouts.model.saveables;
 
-import com.cutlerdevelopment.utils.MyList;
+import com.cutlerdevelopment.helensworkouts.utils.MyList;
 
 import java.util.HashMap;
 
 public abstract class AbstractSaveableItem {
 
     public static final String NAME_FIRESTORE_KEY = "Name";
+    public static final String ID_FIRESTORE_KEY = "ID";
 
     protected SaveableString nameField;
+    public SaveableString getNameField() {return nameField;}
     public String getName() {
         return nameField.getFieldValue();
     }

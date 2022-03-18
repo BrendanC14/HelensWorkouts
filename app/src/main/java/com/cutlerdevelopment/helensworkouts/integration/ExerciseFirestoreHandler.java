@@ -1,20 +1,23 @@
 package com.cutlerdevelopment.helensworkouts.integration;
 
-import com.cutlerdevelopment.model.Exercise;
-import com.cutlerdevelopment.model.ExerciseType;
-import com.cutlerdevelopment.model.Notifications;
-import com.cutlerdevelopment.model.saveables.AbstractSaveableItem;
-import com.cutlerdevelopment.utils.MyList;
+import com.cutlerdevelopment.helensworkouts.model.Exercise;
+import com.cutlerdevelopment.helensworkouts.model.ExerciseType;
+import com.cutlerdevelopment.helensworkouts.model.Notifications;
+import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableField;
+import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableItem;
+import com.cutlerdevelopment.helensworkouts.utils.MyList;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.HashMap;
 
 
 public class ExerciseFirestoreHandler extends AbstractFirestoreHandler{
 
     public Notifications<IExerciseFirestoreListener> notifications = new Notifications<>();
     protected CollectionReference exerciseCollectionReference = db.collection("Exercises");
-
     public ExerciseFirestoreHandler() {
 
     }
@@ -23,11 +26,11 @@ public class ExerciseFirestoreHandler extends AbstractFirestoreHandler{
         notifications.subscribe(listener);
     }
 
-    public void saveExercise(Exercise exercise) {
+    public void saveNewExercise(Exercise exercise) {
         MyList<Exercise> exercises = new MyList<>(exercise);
-        saveExercises(exercises);
+        saveNewExercises(exercises);
     }
-    public void saveExercises(MyList<Exercise> exercises) {
+    public void saveNewExercises(MyList<Exercise> exercises) {
         for(Exercise exercise : exercises) {
             addDocument(exerciseCollectionReference, exercise);
         }
@@ -39,6 +42,25 @@ public class ExerciseFirestoreHandler extends AbstractFirestoreHandler{
     @Override
     protected void failedToAddDocument(AbstractSaveableItem item, Exception e) {
         notifications.trigger((IExerciseFirestoreListener listener) -> listener.failedToSaveExercise((Exercise)item, e));
+    }
+
+    public void updateExistingExercise(Exercise exercise, MyList<AbstractSaveableField> updatedFields) {
+        this.updateDocumentFields(exercise, updatedFields, exerciseCollectionReference.document(exercise.getNameForSaving()));
+    }
+
+    public void updateExistingExerciseIncludingName(Exercise exercise, String oldName) {
+        this.addDocument(exerciseCollectionReference, exercise);
+        this.deleteDocument(exerciseCollectionReference.document(oldName));
+    }
+
+    @Override
+    protected void documentUpdated(AbstractSaveableItem item) {
+        notifications.trigger((IExerciseFirestoreListener listener) -> listener.exerciseUpdated((Exercise)item));
+    }
+
+    @Override
+    protected void failedToUpdateDocument(AbstractSaveableItem item, Exception e) {
+
     }
 
     public void getExerciseWithName(String name) {

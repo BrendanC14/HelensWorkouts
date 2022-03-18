@@ -1,16 +1,16 @@
-package com.cutlerdevelopment.model;
+package com.cutlerdevelopment.helensworkouts.model;
 
-import com.cutlerdevelopment.model.saveables.AbstractSaveableField;
-import com.cutlerdevelopment.model.saveables.AbstractSaveableItem;
-import com.cutlerdevelopment.model.saveables.SaveableExerciseType;
-import com.cutlerdevelopment.model.saveables.SaveableInt;
-import com.cutlerdevelopment.utils.MyList;
+import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableField;
+import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableItem;
+import com.cutlerdevelopment.helensworkouts.model.saveables.SaveableExerciseType;
+import com.cutlerdevelopment.helensworkouts.utils.MyList;
 
 public class Exercise extends AbstractSaveableItem {
 
     public static final String TYPE_FIRESTORE_KEY = "Type";
 
     private final SaveableExerciseType type;
+    public SaveableExerciseType getTypeField() { return type; }
     public ExerciseType getType() {
         return type.getFieldValue();
     }

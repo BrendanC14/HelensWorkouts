@@ -1,6 +1,6 @@
-package com.cutlerdevelopment.model.saveables;
+package com.cutlerdevelopment.helensworkouts.model.saveables;
 
-import com.cutlerdevelopment.model.ExerciseType;
+import com.cutlerdevelopment.helensworkouts.model.ExerciseType;
 
 public class SaveableExerciseType extends AbstractSaveableField {
 

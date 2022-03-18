@@ -1,4 +1,4 @@
-package com.cutlerdevelopment.model.saveables;
+package com.cutlerdevelopment.helensworkouts.model.saveables;
 
 public abstract class AbstractSaveableField {
     private String fieldName;

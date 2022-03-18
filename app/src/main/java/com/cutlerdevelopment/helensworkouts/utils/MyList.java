@@ -1,4 +1,4 @@
-package com.cutlerdevelopment.utils;
+package com.cutlerdevelopment.helensworkouts.utils;
 
 import java.util.ArrayList;
 

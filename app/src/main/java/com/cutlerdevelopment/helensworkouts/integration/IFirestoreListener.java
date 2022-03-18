@@ -1,7 +1,7 @@
 package com.cutlerdevelopment.helensworkouts.integration;
 
-import com.cutlerdevelopment.model.saveables.AbstractSaveableItem;
-import com.cutlerdevelopment.utils.MyList;
+import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableItem;
+import com.cutlerdevelopment.helensworkouts.utils.MyList;
 
 
 public interface IFirestoreListener {

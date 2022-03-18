@@ -1,13 +1,13 @@
-package com.cutlerdevelopment.model;
+package com.cutlerdevelopment.helensworkouts.model;
 
-import com.cutlerdevelopment.model.saveables.AbstractSaveableField;
-import com.cutlerdevelopment.model.saveables.AbstractSaveableItem;
-import com.cutlerdevelopment.model.saveables.SaveableInt;
-import com.cutlerdevelopment.model.saveables.SaveableString;
-import com.cutlerdevelopment.utils.MyList;
+import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableField;
+import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableItem;
+import com.cutlerdevelopment.helensworkouts.model.saveables.SaveableInt;
+import com.cutlerdevelopment.helensworkouts.model.saveables.SaveableString;
+import com.cutlerdevelopment.helensworkouts.utils.MyList;
 
 
-public class WorkoutStep extends AbstractSaveableItem {
+public class TemplateWorkoutStep extends AbstractSaveableItem {
 
     public static final String EXERCISE_NAME_FIRESTORE_KEY = "Exercise";
     public static final String WORKOUT_NAME_FIRESTORE_KEY = "Workout";
@@ -20,11 +20,11 @@ public class WorkoutStep extends AbstractSaveableItem {
         this.exercise = exercise;
     }
 
-    private Workout workout;
-    public Workout getWorkout() {
+    private WorkoutTemplate workout;
+    public WorkoutTemplate getWorkout() {
         return workout;
     }
-    public void setWorkout(Workout workout) {
+    public void setWorkout(WorkoutTemplate workout) {
         this.workout = workout;
     }
 
@@ -36,7 +36,7 @@ public class WorkoutStep extends AbstractSaveableItem {
         this.positionInWorkout.setFieldValue(positionInWorkout);
     }
 
-    public WorkoutStep(int positionInWorkout, Exercise exercise, Workout workout) {
+    public TemplateWorkoutStep(int positionInWorkout, Exercise exercise, WorkoutTemplate workout) {
         super(exercise.getName());
         this.exercise = exercise;
         this.positionInWorkout = new SaveableInt(POS_IN_WORKOUT_FIRESTORE_KEY, positionInWorkout);

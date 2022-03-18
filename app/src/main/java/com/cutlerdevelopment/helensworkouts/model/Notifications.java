@@ -1,7 +1,6 @@
-package com.cutlerdevelopment.model;
+package com.cutlerdevelopment.helensworkouts.model;
 
-import com.cutlerdevelopment.helensworkouts.integration.IFirestoreListener;
-import com.cutlerdevelopment.utils.MyList;
+import com.cutlerdevelopment.helensworkouts.utils.MyList;
 
 import java.util.function.Consumer;
 

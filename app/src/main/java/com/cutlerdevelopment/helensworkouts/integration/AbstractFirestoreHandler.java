@@ -1,9 +1,8 @@
 package com.cutlerdevelopment.helensworkouts.integration;
 
-import com.cutlerdevelopment.model.Notifications;
-import com.cutlerdevelopment.model.saveables.AbstractSaveableItem;
-import com.cutlerdevelopment.model.saveables.AbstractSaveableField;
-import com.cutlerdevelopment.utils.MyList;
+import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableItem;
+import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableField;
+import com.cutlerdevelopment.helensworkouts.utils.MyList;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -62,8 +61,14 @@ public abstract class AbstractFirestoreHandler {
         }
         documentReference
                 .set(map, SetOptions.merge())
-                .addOnSuccessListener(result -> documentAdded(item))
-                .addOnFailureListener(exception -> failedToAddDocument(item, exception));
+                .addOnSuccessListener(result -> documentUpdated(item))
+                .addOnFailureListener(exception -> failedToUpdateDocument(item, exception));
+    }
+    protected abstract void documentUpdated(AbstractSaveableItem item);
+    protected abstract void failedToUpdateDocument(AbstractSaveableItem item, Exception e);
+
+    protected void deleteDocument(DocumentReference reference) {
+        reference.delete();
     }
 
     protected abstract AbstractSaveableItem convertDocumentToItem(DocumentSnapshot documentSnapshot);
