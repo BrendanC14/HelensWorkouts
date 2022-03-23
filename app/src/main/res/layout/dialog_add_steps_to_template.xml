@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/blue"
+    android:layout_height="wrap_content">
+
+    <Spinner
+        android:id="@+id/addStepsExerciseSpinner"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </Spinner>
+
+    <Button
+        android:id="@+id/addStepsAddSetButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/addStepsExerciseSpinner"
+        android:textColor="@color/dark_blue"
+        android:text="Add Set">
+
+    </Button>
+
+    <Button
+        android:id="@+id/addStepsAddRestButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        app:layout_constraintStart_toEndOf="@id/addStepsAddSetButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/addStepsExerciseSpinner"
+        android:textColor="@color/dark_blue"
+        android:text="Add Rest">
+
+    </Button>
+
+
+    <ScrollView
+        android:id="@+id/addStepsScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/addStepsRepeatButton"
+        app:layout_constraintTop_toBottomOf="@+id/addStepsAddRestButton">
+
+        <LinearLayout
+            android:id="@+id/addStepsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/addStepsRepeatButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/addStepsSaveButton"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/dark_blue"
+        android:text="Repeat">
+
+    </Button>
+
+    <Button
+        android:id="@+id/addStepsCancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/dark_blue"
+        android:text="Cancel">
+
+    </Button>
+
+    <Button
+        android:id="@+id/addStepsSaveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/dark_blue"
+        android:text="Add to Workout">
+
+    </Button>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

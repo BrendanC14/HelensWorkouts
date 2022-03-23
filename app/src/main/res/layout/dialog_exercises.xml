@@ -2,25 +2,79 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/dark_turquoise"
+    android:background="@color/blue"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ScrollView
-        android:id="@+id/exercisesScrollView"
+
+    <ListView
+        android:id="@+id/exercisesLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/addNewExerciseButton"
+        app:layout_constraintTop_toBottomOf="@+id/exercisesCheckboxLayout"
+        android:layout_height="wrap_content"
+        android:paddingTop="50dp"
+        android:paddingBottom="50dp"
+        android:orientation="vertical">
+    </ListView>
+
+
+    <LinearLayout
+        android:id="@+id/exercisesCheckboxLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:paddingBottom="50dp">
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
 
-        <LinearLayout
-            android:id="@+id/exercisesLayout"
-            android:layout_width="match_parent"
+        <CheckBox
+            android:id="@+id/exercisesRepsFilter"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-        </LinearLayout>
-    </ScrollView>
+            android:text="Reps"
+            android:checked="true"
+            android:textColor="@color/yellow"
+            android:buttonTint="@color/yellow">
+
+        </CheckBox>
+        <CheckBox
+            android:id="@+id/exercisesWeightFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Weight"
+            android:checked="true"
+            android:textColor="@color/yellow"
+            android:buttonTint="@color/yellow">
+
+        </CheckBox>
+
+        <CheckBox
+            android:id="@+id/exercisesTimedFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Timed"
+            android:checked="true"
+            android:textColor="@color/yellow"
+            android:buttonTint="@color/yellow">
+
+        </CheckBox>
+
+    </LinearLayout>
+    <Button
+        android:id="@+id/exercisesCancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/dark_blue"
+        android:text="Cancel">
+
+    </Button>
 
     <Button
         android:id="@+id/addNewExerciseButton"

@@ -1,5 +1,7 @@
 package com.cutlerdevelopment.helensworkouts.integration;
 
+import android.util.Log;
+
 import com.cutlerdevelopment.helensworkouts.model.Exercise;
 import com.cutlerdevelopment.helensworkouts.model.ExerciseType;
 import com.cutlerdevelopment.helensworkouts.model.Notifications;
@@ -45,12 +47,7 @@ public class ExerciseFirestoreHandler extends AbstractFirestoreHandler{
     }
 
     public void updateExistingExercise(Exercise exercise, MyList<AbstractSaveableField> updatedFields) {
-        this.updateDocumentFields(exercise, updatedFields, exerciseCollectionReference.document(exercise.getNameForSaving()));
-    }
-
-    public void updateExistingExerciseIncludingName(Exercise exercise, String oldName) {
-        this.addDocument(exerciseCollectionReference, exercise);
-        this.deleteDocument(exerciseCollectionReference.document(oldName));
+        this.updateDocumentFields(exercise, updatedFields, exerciseCollectionReference.document(exercise.getId()));
     }
 
     @Override
@@ -99,6 +96,6 @@ public class ExerciseFirestoreHandler extends AbstractFirestoreHandler{
         String name = documentSnapshot.getString(AbstractSaveableItem.NAME_FIRESTORE_KEY);
         if (name == null) return null;
         ExerciseType type = ExerciseType.valueOf(documentSnapshot.getString(Exercise.TYPE_FIRESTORE_KEY));
-        return new Exercise(name, type);
+        return new Exercise(documentSnapshot.getId(), name, type);
     }
 }

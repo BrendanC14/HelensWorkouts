@@ -23,10 +23,19 @@ public class Exercise extends AbstractSaveableItem {
         this.type = new SaveableExerciseType(TYPE_FIRESTORE_KEY, type);
     }
 
+    public Exercise(String id, String name, ExerciseType type) {
+        super(id, name);
+        this.type = new SaveableExerciseType(TYPE_FIRESTORE_KEY, type);
+    }
+
     @Override
     protected MyList<AbstractSaveableField> getSaveableFields() {
         MyList<AbstractSaveableField> fields = super.getSaveableFields();
         fields.add(type);
         return fields;
+    }
+
+    public static Exercise getRestExercise() {
+        return new Exercise("Rest", ExerciseType.REST);
     }
 }

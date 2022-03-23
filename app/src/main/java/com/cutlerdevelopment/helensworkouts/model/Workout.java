@@ -2,6 +2,8 @@ package com.cutlerdevelopment.helensworkouts.model;
 
 import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableField;
 import com.cutlerdevelopment.helensworkouts.model.saveables.SaveableDate;
+import com.cutlerdevelopment.helensworkouts.model.workout_steps.TemplateWorkoutStep;
+import com.cutlerdevelopment.helensworkouts.model.workout_steps.WorkoutStep;
 import com.cutlerdevelopment.helensworkouts.utils.MyList;
 
 import java.util.Date;
@@ -33,6 +35,10 @@ public class Workout extends WorkoutTemplate{
 
     public Workout(String name, Date date) {
         super(name);
+        this.date = new SaveableDate(DATE_FIRESTORE_KEY, date);
+    }
+    public Workout(String id, String name, Date date) {
+        super(id, name);
         this.date = new SaveableDate(DATE_FIRESTORE_KEY, date);
     }
     public Workout(WorkoutTemplate template, Date date) {

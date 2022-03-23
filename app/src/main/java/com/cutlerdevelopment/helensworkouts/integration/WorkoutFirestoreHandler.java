@@ -1,8 +1,10 @@
 package com.cutlerdevelopment.helensworkouts.integration;
 
+import com.cutlerdevelopment.helensworkouts.model.Exercise;
 import com.cutlerdevelopment.helensworkouts.model.Notifications;
 import com.cutlerdevelopment.helensworkouts.model.Workout;
 import com.cutlerdevelopment.helensworkouts.model.WorkoutTemplate;
+import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableField;
 import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableItem;
 import com.cutlerdevelopment.helensworkouts.utils.DateUtil;
 import com.cutlerdevelopment.helensworkouts.utils.MyList;
@@ -68,11 +70,31 @@ public class WorkoutFirestoreHandler extends AbstractFirestoreHandler {
         notifications.trigger((IWorkoutFirestoreListener listener) -> listener.failedToSaveTemplate((WorkoutTemplate)item, e));
     }
 
+
+    public void updateExistingTemplate(WorkoutTemplate template, MyList<AbstractSaveableField> updatedFields) {
+        this.updateDocumentFields(template, updatedFields, templateCollectionReference.document(template.getId()));
+    }
+
+
+    @Override
+    protected void documentUpdated(AbstractSaveableItem item) {
+        notifications.trigger((IWorkoutFirestoreListener listener) -> listener.templateUpdated((WorkoutTemplate) item));
+    }
+
+    @Override
+    protected void failedToUpdateDocument(AbstractSaveableItem item, Exception e) {
+
+    }
+
     public void getTemplateWithName(String name) {
         retrieveDocument(templateCollectionReference, name);
     }
     public void getWorkoutWithDate(Date date) {
         retrieveCollection(getWorkoutCollectionReference(date), null);
+    }
+
+    public void updateExistingWorkout(Workout workout, MyList<AbstractSaveableField> updatedFields) {
+        this.updateDocumentFields(workout, updatedFields, getWorkoutCollectionReference(workout.getDate()).document(workout.getId()));
     }
     @Override
     protected void documentRetrieved(DocumentSnapshot documentSnapshot) {
@@ -107,16 +129,6 @@ public class WorkoutFirestoreHandler extends AbstractFirestoreHandler {
     }
 
     @Override
-    protected void documentUpdated(AbstractSaveableItem item) {
-
-    }
-
-    @Override
-    protected void failedToUpdateDocument(AbstractSaveableItem item, Exception e) {
-
-    }
-
-    @Override
     protected void failedToRetrieveCollection(String documentName, Exception e) {
         notifications.trigger((IWorkoutFirestoreListener listener) -> listener.failedToRetrieveTemplates(documentName, e));
     }
@@ -125,7 +137,7 @@ public class WorkoutFirestoreHandler extends AbstractFirestoreHandler {
     protected WorkoutTemplate convertDocumentToItem(DocumentSnapshot documentSnapshot) {
         String name = documentSnapshot.getString(AbstractSaveableItem.NAME_FIRESTORE_KEY);
         if (name == null) return null;
-        return new WorkoutTemplate(name);
+        return new WorkoutTemplate(documentSnapshot.getId(), name);
     }
 
     protected Workout convertDocumentToWorkout(DocumentSnapshot documentSnapshot) {
@@ -133,7 +145,7 @@ public class WorkoutFirestoreHandler extends AbstractFirestoreHandler {
         if (name == null) return null;
         Date date = documentSnapshot.getDate(Workout.DATE_FIRESTORE_KEY);
         if (date == null) return null;
-        return new Workout(name, date);
+        return new Workout(documentSnapshot.getId(), name, date);
 
     }
 }

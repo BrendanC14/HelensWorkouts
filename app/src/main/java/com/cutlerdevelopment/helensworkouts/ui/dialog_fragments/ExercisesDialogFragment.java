@@ -2,84 +2,85 @@ package com.cutlerdevelopment.helensworkouts.ui.dialog_fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
 
 import com.cutlerdevelopment.helensworkouts.R;
 import com.cutlerdevelopment.helensworkouts.model.Exercise;
+import com.cutlerdevelopment.helensworkouts.model.ExerciseType;
 import com.cutlerdevelopment.helensworkouts.model.Workout;
 import com.cutlerdevelopment.helensworkouts.model.WorkoutTemplate;
 import com.cutlerdevelopment.helensworkouts.model.data.DataHolder;
 import com.cutlerdevelopment.helensworkouts.model.data.IDataListener;
+import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableItem;
+import com.cutlerdevelopment.helensworkouts.ui.listadapters.ExerciseListAdapter;
+import com.cutlerdevelopment.helensworkouts.utils.MyList;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
-public class ExercisesDialogFragment extends DialogFragment implements IDataListener {
+public class ExercisesDialogFragment extends AbstractSaveableItemDialogFragment {
 
-    private HashMap<Exercise, View> exerciseViewMap = new HashMap<>();
-    private LayoutInflater inflater;
-    LinearLayout layout;
+    private CheckBox repsFilter;
+    private CheckBox weightFilter;
+    private CheckBox timedFilter;
+
+    private ExerciseListAdapter adapter;
+
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        inflater = requireActivity().getLayoutInflater();
+    protected View inflateDialogView(AlertDialog.Builder builder) {
+        inflater.inflate(R.layout.dialog_exercises, null);
         View exercisesFragment = inflater.inflate(R.layout.dialog_exercises, null);
-        builder.setView(exercisesFragment);
-        DataHolder.getInstance().notifications.subscribe(this);
-        layout = exercisesFragment.findViewById(R.id.exercisesLayout);
-        for (Exercise exercise : DataHolder.getInstance().getAllExercises()) {
-            addNewExercise(exercise);
-        }
-        return builder.create();
+        itemParent = exercisesFragment.findViewById(R.id.exercisesLayout);
+        repsFilter = exercisesFragment.findViewById(R.id.exercisesRepsFilter);
+        weightFilter = exercisesFragment.findViewById(R.id.exercisesWeightFilter);
+        timedFilter = exercisesFragment.findViewById(R.id.exercisesTimedFilter);
+        repsFilter.setOnCheckedChangeListener((compoundButton, b) -> {
+            repsFilter.setChecked(b);
+            adapter.setShowReps(b);
+        });
+        weightFilter.setOnCheckedChangeListener((compoundButton, b) -> {
+            weightFilter.setChecked(b);
+            adapter.setShowWeight(b);
+        });
+        timedFilter.setOnCheckedChangeListener((compoundButton, b) -> {
+            timedFilter.setChecked(b);
+            adapter.setShowTimed(b);
+        });
+        exercisesFragment.findViewById(R.id.addNewExerciseButton).setOnClickListener(view -> createNewExercise());
+        exercisesFragment.findViewById(R.id.exercisesCancelButton).setOnClickListener(view -> dismiss());
+        adapter = new ExerciseListAdapter(getContext(), getParentFragmentManager());
+        itemParent.setAdapter(adapter);
+        return exercisesFragment;
     }
 
-
-    private void addNewExercise(Exercise exercise) {
-        View exerciseView = inflater.inflate(R.layout.view_exercise, null);
-        populateViewWithExerciseDetails(exercise, exerciseView);
-        layout.addView(exerciseView);
-        exerciseViewMap.put(exercise, exerciseView);
+    @Override
+    protected ListAdapter getListAdapter() {
+        return adapter;
     }
 
-    private void populateViewWithExerciseDetails(Exercise exercise, View exerciseView) {
-        TextView exerciseName = exerciseView.findViewById(R.id.exerciseName);
-        exerciseName.setText(exercise.getName());
-
-        TextView exerciseType = exerciseView.findViewById(R.id.exerciseType);
-        String type = exercise.getType().name();
-        type = type.substring(0,1).toUpperCase() + type.substring(1).toLowerCase();
-        exerciseType.setText(type);
-
-        exerciseView.findViewById(R.id.exerciseEditButton).setOnClickListener(view -> openExercise(exercise) );
-
-    }
-
-    private void openExercise(Exercise exercise) {
-        DialogFragment dialogFragment = new EditExerciseDialogFragment(exercise);
+    private void createNewExercise() {
+        DialogFragment dialogFragment = new EditExerciseDialogFragment(null);
         dialogFragment.show(getParentFragmentManager(), "EditExerciseDialogFragment");
+
     }
 
     @Override
     public void exerciseAdded(Exercise exercise) {
-        addNewExercise(exercise);
+        adapter.addExercise(exercise);
     }
 
     @Override
     public void exerciseChanged(Exercise exercise) {
-        if (exerciseViewMap.containsKey(exercise)) {
-            View view = exerciseViewMap.get(exercise);
-            populateViewWithExerciseDetails(exercise, view);
-        }
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -100,11 +101,5 @@ public class ExercisesDialogFragment extends DialogFragment implements IDataList
     @Override
     public void workoutChanged(Workout workout) {
 
-    }
-
-    @Override
-    public void dismiss() {
-        DataHolder.getInstance().notifications.unsubscribe(this);
-        super.dismiss();
     }
 }

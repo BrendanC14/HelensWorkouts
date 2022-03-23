@@ -47,9 +47,12 @@ public class EditExerciseDialogFragment extends DialogFragment {
         timedWorkoutButton = exercisesFragment.findViewById(R.id.editExerciseTimedRadioButton);
         weightWorkoutButton = exercisesFragment.findViewById(R.id.editExerciseWeightRadioButton);
         exercisesFragment.findViewById(R.id.editExerciseSaveButton).setOnClickListener(view -> saveChanges());
+        exercisesFragment.findViewById(R.id.editExerciseCancelButton).setOnClickListener(view -> dismiss());
         if (exercise != null) {
             nameText.setText(exercise.getName());
             getButtonForType(exercise.getType()).setChecked(true);
+        } else {
+            repsWorkoutButton.setChecked(true);
         }
 
         return builder.create();
@@ -65,26 +68,29 @@ public class EditExerciseDialogFragment extends DialogFragment {
     }
 
     private void saveNewExercise() {
-
+        String name = nameText.getText().toString();
+        if (name.equals("")) return;
+        DataHolder.getInstance().saveNewExercise(new Exercise(
+                name,
+                getSelectedExercise()
+        ));
     }
 
     private void updateExistingExercise() {
         MyList<AbstractSaveableField> updatedFields = new MyList<>();
         String newName = nameText.getText().toString();
+        if (!newName.equalsIgnoreCase(exercise.getName())) {
+            exercise.setName(newName);
+            updatedFields.add(exercise.getNameField());
+        }
         ExerciseType typeSelected = getSelectedExercise();
         if (typeSelected != exercise.getType()) {
             exercise.setType(typeSelected);
             updatedFields.add(exercise.getTypeField());
         }
-        if (!newName.equalsIgnoreCase(exercise.getName())) {
-            String oldName = exercise.getNameForSaving();
-            exercise.setName(newName);
-            updatedFields.add(exercise.getNameField());
-            new ExerciseFirestoreHandler().updateExistingExerciseIncludingName(exercise,oldName);
-        } else {
-            if (!updatedFields.isEmpty()) {
-                new ExerciseFirestoreHandler().updateExistingExercise(exercise, updatedFields);
-            }
+
+        if (!updatedFields.isEmpty()) {
+            DataHolder.getInstance().updateExercise(exercise, updatedFields);
         }
 
     }

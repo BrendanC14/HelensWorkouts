@@ -9,13 +9,17 @@ import com.cutlerdevelopment.helensworkouts.model.Exercise;
 import com.cutlerdevelopment.helensworkouts.model.ExerciseType;
 import com.cutlerdevelopment.helensworkouts.model.Notifications;
 import com.cutlerdevelopment.helensworkouts.model.Workout;
-import com.cutlerdevelopment.helensworkouts.model.WorkoutStep;
+import com.cutlerdevelopment.helensworkouts.model.workout_steps.WorkoutStep;
 import com.cutlerdevelopment.helensworkouts.model.WorkoutTemplate;
-import com.cutlerdevelopment.helensworkouts.model.TemplateWorkoutStep;
+import com.cutlerdevelopment.helensworkouts.model.workout_steps.TemplateWorkoutStep;
+import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableField;
+import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableItem;
 import com.cutlerdevelopment.helensworkouts.utils.MyList;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestoreListener {
 
@@ -37,8 +41,9 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
     public Notifications<IDataListener> notifications = new Notifications<>();
 
     private final ExerciseFirestoreHandler exerciseFirestoreHandler = new ExerciseFirestoreHandler(this);
-    private final HashMap<String, Exercise> exerciseByNameMap = new HashMap<>();
-    private final HashMap<ExerciseType, MyList<Exercise>> exercisesByTypeMap = new HashMap<>();
+    private final LinkedHashMap<String, Exercise> exerciseByIDMap = new LinkedHashMap<>();
+    private final LinkedHashMap<String, Exercise> exerciseByNameMap = new LinkedHashMap<>();
+    private final LinkedHashMap<ExerciseType, MyList<Exercise>> exercisesByTypeMap = new LinkedHashMap<>();
 
     private DataHolder() {
         LoadAllExercises();
@@ -53,10 +58,18 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
     }
     public MyList<Exercise> getAllExercises() {
         MyList<Exercise> exercises = new MyList<>();
-        for(Exercise exercise : exerciseByNameMap.values()) {
+        for(Exercise exercise : exerciseByIDMap.values()) {
             exercises.addIfNew(exercise);
         }
         return exercises;
+    }
+    public MyList<String> getAllExerciseNames() {
+        MyList<String> names = new MyList<>();
+        names.addAll(exerciseByNameMap.keySet());
+        return names;
+    }
+    public Exercise getExerciseByID(String id) {
+        return exerciseByIDMap.getOrDefault(id, null);
     }
     public Exercise getExerciseByName(String name) {
         return exerciseByNameMap.getOrDefault(name, null);
@@ -65,8 +78,13 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
         return exercisesByTypeMap.getOrDefault(type, new MyList<>());
     }
 
+    public void updateExercise(Exercise exercise, MyList<AbstractSaveableField> updatedFields) {
+        exerciseFirestoreHandler.updateExistingExercise(exercise, updatedFields);
+    }
+
     @Override
     public void exerciseRetrieved(Exercise exercise) {
+        exerciseByIDMap.put(exercise.getId(), exercise);
         exerciseByNameMap.put(exercise.getName(), exercise);
         ExerciseType type = exercise.getType();
         if (!exercisesByTypeMap.containsKey(type)) exercisesByTypeMap.put(type, new MyList<>());
@@ -86,7 +104,7 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
 
     @Override
     public void exerciseUpdated(Exercise exercise) {
-
+        notifications.trigger((IDataListener listener) -> listener.exerciseChanged(exercise));
     }
 
     @Override
@@ -101,9 +119,11 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
 
     @Override
     public void exercisesRetrieved(MyList<Exercise> exercises) {
+        exercises.sort(Comparator.comparing(AbstractSaveableItem::getName));
         for (Exercise exercise : exercises) {
             exerciseRetrieved(exercise);
         }
+
     }
 
     @Override
@@ -113,7 +133,7 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
 
     private final WorkoutFirestoreHandler templateFirestoreHandler = new WorkoutFirestoreHandler(this, true);
     private final WorkoutStepFirestoreHandler templateStepFirestoreHandler = new WorkoutStepFirestoreHandler(this, true);
-    private final HashMap<String, WorkoutTemplate> templateByNameMap = new HashMap<>();
+    private final HashMap<String, WorkoutTemplate> templateByIDMap = new HashMap<>();
 
     public void saveNewTemplate(WorkoutTemplate template) {
         templateFirestoreHandler.saveTemplate(template);
@@ -122,15 +142,23 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
         templateFirestoreHandler.getAllTemplates();
     }
 
-    public WorkoutTemplate getTemplateByName(String name) {
-        return templateByNameMap.getOrDefault(name, null);
+    public WorkoutTemplate getTemplateByName(String id) {
+        return templateByIDMap.getOrDefault(id, null);
+    }
+
+    public MyList<WorkoutTemplate> getAllTemplates() {
+        MyList<WorkoutTemplate> templates = new MyList<>();
+        for(WorkoutTemplate template : templateByIDMap.values()) {
+            templates.addIfNew(template);
+        }
+        return templates;
     }
 
     @Override
     public void templateSaved(WorkoutTemplate template) {
         templateStepFirestoreHandler.saveTemplateSteps(template.getTemplateSteps());
-        templateByNameMap.put(template.getName(), template);
-        notifications.trigger((IDataListener listener) -> listener.templateAdded(template));
+        templateByIDMap.put(template.getId(), template);
+         notifications.trigger((IDataListener listener) -> listener.templateAdded(template));
     }
 
     @Override
@@ -138,9 +166,23 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
 
     }
 
+    public void updateTemplate(WorkoutTemplate template, MyList<AbstractSaveableField> updatedFields) {
+        templateFirestoreHandler.updateExistingTemplate(template, updatedFields);
+    }
+
+    @Override
+    public void templateUpdated(WorkoutTemplate template) {
+        notifications.trigger((IDataListener listener) -> listener.templateChanged(template));
+    }
+
+    @Override
+    public void failedToUpdateTemplate(WorkoutTemplate template, Exception e) {
+
+    }
+
     @Override
     public void templateRetrieved(WorkoutTemplate template) {
-        templateByNameMap.put(template.getName(), template);
+        templateByIDMap.put(template.getId(), template);
         templateStepFirestoreHandler.getStepsFromTemplate(template);
     }
 
@@ -173,6 +215,7 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
 
     @Override
     public void templateStepsRetrieved(WorkoutTemplate template, MyList<TemplateWorkoutStep> steps) {
+        steps.sort(Comparator.comparingInt(TemplateWorkoutStep::getPositionInWorkout));
         for (TemplateWorkoutStep step : steps) {
             template.addWorkoutStep(step);
         }
@@ -181,6 +224,20 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
 
     @Override
     public void failedToRetrieveTemplateSteps(String collectionName, Exception e) {
+
+    }
+
+    public void updateTemplateStep(TemplateWorkoutStep step, MyList<AbstractSaveableField> updatedFields) {
+        templateStepFirestoreHandler.updateExistingTemplateStep(step, updatedFields);
+    }
+
+    @Override
+    public void templateStepUpdated(TemplateWorkoutStep step) {
+
+    }
+
+    @Override
+    public void failedToUpdateTemplateStep(TemplateWorkoutStep template, Exception e) {
 
     }
 
@@ -202,6 +259,20 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
 
     @Override
     public void failedToSaveWorkout(Workout workout, Exception e) {
+
+    }
+
+    public void updateWorkout(Workout workout, MyList<AbstractSaveableField> updatedFields) {
+        workoutFirestoreHandler.updateExistingWorkout(workout, updatedFields);
+    }
+
+    @Override
+    public void workoutUpdated(Workout workout) {
+        notifications.trigger((IDataListener listener) -> listener.workoutChanged(workout));
+    }
+
+    @Override
+    public void failedToUpdateWorkout(Workout workout, Exception e) {
 
     }
 
@@ -246,6 +317,16 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
 
     @Override
     public void failedToSaveWorkoutStep(WorkoutStep step, Exception e) {
+
+    }
+
+    @Override
+    public void workoutUpdated(WorkoutStep step) {
+
+    }
+
+    @Override
+    public void failedToUpdateWorkout(WorkoutStep step, Exception e) {
 
     }
 

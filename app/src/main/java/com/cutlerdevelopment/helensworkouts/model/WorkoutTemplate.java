@@ -1,6 +1,7 @@
 package com.cutlerdevelopment.helensworkouts.model;
 
 import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableItem;
+import com.cutlerdevelopment.helensworkouts.model.workout_steps.TemplateWorkoutStep;
 import com.cutlerdevelopment.helensworkouts.utils.MyList;
 
 public class WorkoutTemplate extends AbstractSaveableItem {
@@ -18,6 +19,9 @@ public class WorkoutTemplate extends AbstractSaveableItem {
 
     public WorkoutTemplate(String name) {
         super(name);
+    }
+    public WorkoutTemplate(String id, String name) {
+        super(id, name);
     }
 
 }

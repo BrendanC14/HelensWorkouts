@@ -3,11 +3,20 @@ package com.cutlerdevelopment.helensworkouts.model.saveables;
 import com.cutlerdevelopment.helensworkouts.utils.MyList;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public abstract class AbstractSaveableItem {
 
     public static final String NAME_FIRESTORE_KEY = "Name";
     public static final String ID_FIRESTORE_KEY = "ID";
+
+    private String id;
+    public String getId() {
+        return id;
+    }
+    public void generateUUID() {
+        id = UUID.randomUUID().toString();
+    }
 
     protected SaveableString nameField;
     public SaveableString getNameField() {return nameField;}
@@ -22,6 +31,10 @@ public abstract class AbstractSaveableItem {
     }
 
     protected AbstractSaveableItem(String name) {
+        nameField = new SaveableString(NAME_FIRESTORE_KEY, name);
+    }
+    protected AbstractSaveableItem(String id, String name) {
+        this.id = id;
         nameField = new SaveableString(NAME_FIRESTORE_KEY, name);
     }
 

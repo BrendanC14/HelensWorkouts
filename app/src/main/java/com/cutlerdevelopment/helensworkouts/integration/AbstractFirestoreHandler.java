@@ -20,8 +20,9 @@ public abstract class AbstractFirestoreHandler {
     }
 
     protected void addDocument(CollectionReference collectionReference, AbstractSaveableItem item) {
+        item.generateUUID();
         collectionReference
-                .document(item.getNameForSaving())
+                .document(item.getId())
                 .set(item.convertToSaveableMap())
                 .addOnSuccessListener( result -> documentAdded(item))
                 .addOnFailureListener(exception -> failedToAddDocument(item, exception));

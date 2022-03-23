@@ -1,7 +1,5 @@
 package com.cutlerdevelopment.helensworkouts.ui;
 
-import static java.security.AccessController.getContext;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
@@ -13,17 +11,15 @@ import android.widget.TextView;
 
 import com.cutlerdevelopment.helensworkouts.R;
 import com.cutlerdevelopment.helensworkouts.model.Exercise;
-import com.cutlerdevelopment.helensworkouts.model.TemplateWorkoutStep;
 import com.cutlerdevelopment.helensworkouts.model.Workout;
-import com.cutlerdevelopment.helensworkouts.model.WorkoutStep;
 import com.cutlerdevelopment.helensworkouts.model.WorkoutTemplate;
 import com.cutlerdevelopment.helensworkouts.model.data.DataHolder;
 import com.cutlerdevelopment.helensworkouts.model.data.IDataListener;
 import com.cutlerdevelopment.helensworkouts.ui.dialog_fragments.ExercisesDialogFragment;
+import com.cutlerdevelopment.helensworkouts.ui.dialog_fragments.WorkoutTemplatesDialogFragment;
 import com.cutlerdevelopment.helensworkouts.utils.DateUtil;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class MainActivity extends AppCompatActivity implements IDataListener {
@@ -37,9 +33,9 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         setContentView(R.layout.activity_main);
         layout = findViewById(R.id.calendarLayout);
         findViewById(R.id.exercisesButton).setOnClickListener(view -> openExercises());
-        findViewById(R.id.workoutsButton).setOnClickListener(view -> openWorkouts());
+        findViewById(R.id.workoutsButton).setOnClickListener(view -> openWorkoutTemplates());
         DataHolder dataHolder = DataHolder.getInstance(this);
-        Date today = new Date();
+        Date today = DateUtil.currentDate();
         for (int i = 0; i < 31; i++) {
             Date date = DateUtil.addDays(today, i);
             addDateToLayout(date);
@@ -62,13 +58,14 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         exerciseFragment.show(getSupportFragmentManager(), "ExerciseFragment");
     }
 
-    private void openWorkouts() {
+    private void openWorkoutTemplates() {
+        DialogFragment templateFragment = new WorkoutTemplatesDialogFragment();
+        templateFragment.show(getSupportFragmentManager(), "TemplateFragment");
 
     }
 
     @Override
     public void exerciseAdded(Exercise exercise) {
-
     }
 
     @Override
@@ -78,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
 
     @Override
     public void templateAdded(WorkoutTemplate template) {
-        //DataHolder.getInstance().saveNewWorkout(new Workout(template, new Date()));
     }
 
 

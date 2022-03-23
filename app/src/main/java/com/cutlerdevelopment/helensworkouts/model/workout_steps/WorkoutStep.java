@@ -1,4 +1,7 @@
-package com.cutlerdevelopment.helensworkouts.model;
+package com.cutlerdevelopment.helensworkouts.model.workout_steps;
+
+import com.cutlerdevelopment.helensworkouts.model.Exercise;
+import com.cutlerdevelopment.helensworkouts.model.Workout;
 
 public class WorkoutStep extends TemplateWorkoutStep{
 
@@ -15,8 +18,16 @@ public class WorkoutStep extends TemplateWorkoutStep{
         super(positionInWorkout, exercise, workout);
     }
 
+    public WorkoutStep(String id, int positionInWorkout, Exercise exercise, Workout workout) {
+        super(id, positionInWorkout, exercise, workout);
+    }
+
     public WorkoutStep(TemplateWorkoutStep template, Workout workout) {
         super(template.getPositionInWorkout(), template.getExercise(), workout);
+        this.workout = workout;
+    }
+    public WorkoutStep(String id, TemplateWorkoutStep template, Workout workout) {
+        super(id, template.getPositionInWorkout(), template.getExercise(), workout);
         this.workout = workout;
     }
 }
