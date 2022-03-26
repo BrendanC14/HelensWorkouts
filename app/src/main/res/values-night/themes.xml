@@ -2,9 +2,9 @@
     <!-- Base application theme. -->
     <style name="Theme.HelensWorkouts" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">@color/yellow</item>
+        <item name="colorPrimaryVariant">@color/dark_turquoise</item>
+        <item name="colorOnPrimary">@color/dark_blue</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_200</item>
@@ -12,5 +12,15 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+    </style>
+    <style name="MyDialogTheme" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="android:background">@color/dark_blue</item>
+        <item name="android:textColor">@color/yellow</item>
+        <item name="android:textColorPrimary">@color/yellow</item>
+        <item name="colorAccent">@color/yellow</item>
+    </style>
+
+    <style name="ButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/yellow</item>
     </style>
 </resources>

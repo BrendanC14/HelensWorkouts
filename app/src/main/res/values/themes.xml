@@ -13,4 +13,14 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+    <style name="MyDialogTheme" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="android:background">@color/dark_blue</item>
+        <item name="android:textColor">@color/yellow</item>
+        <item name="android:textColorPrimary">@color/yellow</item>
+        <item name="android:textColorSecondary">@color/yellow</item>
+    </style>
+
+    <style name="ButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/yellow</item>
+    </style>
 </resources>

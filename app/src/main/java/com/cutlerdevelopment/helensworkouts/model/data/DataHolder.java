@@ -156,7 +156,7 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
 
     @Override
     public void templateSaved(WorkoutTemplate template) {
-        templateStepFirestoreHandler.saveTemplateSteps(template.getTemplateSteps());
+        saveTemplateSteps(template.getTemplateSteps());
         templateByIDMap.put(template.getId(), template);
          notifications.trigger((IDataListener listener) -> listener.templateAdded(template));
     }
@@ -203,6 +203,9 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
 
     }
 
+    public void saveTemplateSteps(MyList<TemplateWorkoutStep> steps) {
+        templateStepFirestoreHandler.saveTemplateSteps(steps);
+    }
     @Override
     public void templateStepSaved(TemplateWorkoutStep step) {
         step.getWorkout().addWorkoutStep(step);
@@ -241,6 +244,10 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
 
     }
 
+    public void deleteTemplateStep(TemplateWorkoutStep step) {
+        workoutStepFirestoreHandler.deleteStep(step);
+        step.getWorkout().removeStep(step);
+    }
 
     private final WorkoutFirestoreHandler workoutFirestoreHandler = new WorkoutFirestoreHandler(this, false);
     private final WorkoutStepFirestoreHandler workoutStepFirestoreHandler = new WorkoutStepFirestoreHandler(this, false);

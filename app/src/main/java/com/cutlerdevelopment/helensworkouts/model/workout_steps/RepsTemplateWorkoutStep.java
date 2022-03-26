@@ -21,14 +21,14 @@ public class RepsTemplateWorkoutStep extends TemplateWorkoutStep {
     public int getMaxReps() { return maxReps.getFieldValue(); }
     public void setMaxReps(int newReps) { maxReps.setFieldValue(newReps);}
 
-    public RepsTemplateWorkoutStep(int positionInWorkout, Exercise exercise, WorkoutTemplate workout, int minReps, int maxReps) {
-        super(positionInWorkout, exercise, workout);
+    public RepsTemplateWorkoutStep(int setNumber, int positionInWorkout, Exercise exercise, WorkoutTemplate workout, int minReps, int maxReps) {
+        super(setNumber, positionInWorkout, exercise, workout);
         this.minReps = new SaveableInt(MIN_REPS_FIRESTORE_KEY, minReps);
         this.maxReps = new SaveableInt(MAX_REPS_FIRESTORE_KEY, maxReps);
     }
 
-    public RepsTemplateWorkoutStep(String id, int positionInWorkout, Exercise exercise, WorkoutTemplate workout, int minReps, int maxReps) {
-        super(id, positionInWorkout, exercise, workout);
+    public RepsTemplateWorkoutStep(String id, int setNumber, int positionInWorkout, Exercise exercise, WorkoutTemplate workout, int minReps, int maxReps) {
+        super(id, setNumber, positionInWorkout, exercise, workout);
         this.minReps = new SaveableInt(MIN_REPS_FIRESTORE_KEY, minReps);
         this.maxReps = new SaveableInt(MAX_REPS_FIRESTORE_KEY, maxReps);
     }

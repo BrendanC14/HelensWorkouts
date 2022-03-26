@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -32,7 +33,11 @@ public abstract class AbstractSaveableItemDialogFragment extends DialogFragment 
         builder.setView(inflateDialogView(builder));
         itemParent.setAdapter(getListAdapter());
         DataHolder.getInstance().notifications.subscribe(this);
-        return builder.create();
+        Dialog dialog =  builder.create();
+        dialog.show();
+        dialog.getWindow().clearFlags( WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        return dialog;
     }
 
     protected abstract View inflateDialogView(AlertDialog.Builder builder);

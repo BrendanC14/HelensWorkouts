@@ -21,14 +21,14 @@ public class TimedTemplateWorkoutStep extends TemplateWorkoutStep {
     public int getSeconds() { return seconds.getFieldValue(); }
     public void setSeconds(int newReps) { seconds.setFieldValue(newReps);}
 
-    public TimedTemplateWorkoutStep(int positionInWorkout, Exercise exercise, WorkoutTemplate workout, int minutes, int seconds) {
-        super(positionInWorkout, exercise, workout);
+    public TimedTemplateWorkoutStep(int setNumber, int positionInWorkout, Exercise exercise, WorkoutTemplate workout, int minutes, int seconds) {
+        super(setNumber, positionInWorkout, exercise, workout);
         this.minutes = new SaveableInt(MINUTES_FIRESTORE_KEY, minutes);
         this.seconds = new SaveableInt(SECONDS_FIRESTORE_KEY, seconds);
     }
 
-    public TimedTemplateWorkoutStep(String id, int positionInWorkout, Exercise exercise, WorkoutTemplate workout, int minutes, int seconds) {
-        super(id, positionInWorkout, exercise, workout);
+    public TimedTemplateWorkoutStep(String id, int setNumber, int positionInWorkout, Exercise exercise, WorkoutTemplate workout, int minutes, int seconds) {
+        super(id, setNumber, positionInWorkout, exercise, workout);
         this.minutes = new SaveableInt(MINUTES_FIRESTORE_KEY, minutes);
         this.seconds = new SaveableInt(SECONDS_FIRESTORE_KEY, seconds);
     }

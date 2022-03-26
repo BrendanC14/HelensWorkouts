@@ -29,9 +29,6 @@ public class Workout extends WorkoutTemplate{
     public void addWorkoutStep(WorkoutStep step) {
         steps.addIfNew(step);
     }
-    public void addWorkoutStep(Exercise exercise) {
-        steps.addIfNew(new WorkoutStep(steps.size(), exercise, this));
-    }
 
     public Workout(String name, Date date) {
         super(name);

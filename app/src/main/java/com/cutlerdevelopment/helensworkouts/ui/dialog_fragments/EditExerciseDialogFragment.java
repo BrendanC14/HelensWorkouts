@@ -3,26 +3,19 @@ package com.cutlerdevelopment.helensworkouts.ui.dialog_fragments;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
 
 import com.cutlerdevelopment.helensworkouts.R;
-import com.cutlerdevelopment.helensworkouts.integration.ExerciseFirestoreHandler;
 import com.cutlerdevelopment.helensworkouts.model.Exercise;
 import com.cutlerdevelopment.helensworkouts.model.ExerciseType;
 import com.cutlerdevelopment.helensworkouts.model.data.DataHolder;
 import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableField;
 import com.cutlerdevelopment.helensworkouts.utils.MyList;
 import com.google.android.material.textfield.TextInputEditText;
-
-import java.util.HashMap;
 
 public class EditExerciseDialogFragment extends DialogFragment {
 
@@ -40,7 +33,7 @@ public class EditExerciseDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View exercisesFragment = inflater.inflate(R.layout.dialog_edit_exercises, null);
+        View exercisesFragment = inflater.inflate(R.layout.dialog_edit_exercise, null);
         builder.setView(exercisesFragment);
         nameText = exercisesFragment.findViewById(R.id.editExerciseNameInputEditText);
         repsWorkoutButton = exercisesFragment.findViewById(R.id.editExerciseRepsRadioButton);

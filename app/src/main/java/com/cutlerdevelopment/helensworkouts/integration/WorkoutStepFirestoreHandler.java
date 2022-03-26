@@ -128,10 +128,14 @@ public class WorkoutStepFirestoreHandler extends AbstractFirestoreHandler{
         notifications.trigger((IWorkoutFirestoreListener listener) -> listener.failedToRetrieveTemplateSteps(documentName, e));
     }
 
+    public void deleteStep(TemplateWorkoutStep step) {
+        this.deleteDocument(getStepsCollectionReference(step.getWorkout()).document(step.getId()));
+    }
 
     @Override
     protected TemplateWorkoutStep convertDocumentToItem(DocumentSnapshot documentSnapshot) {
         int pos = documentSnapshot.getLong(TemplateWorkoutStep.POS_IN_WORKOUT_FIRESTORE_KEY).intValue();
+        int set = documentSnapshot.getLong(TemplateWorkoutStep.SET_NUMBER_FIRESTORE_KEY).intValue();
         String exerciseName = documentSnapshot.getString(TemplateWorkoutStep.EXERCISE_ID_FIRESTORE_KEY);
         String workoutName = documentSnapshot.getString(TemplateWorkoutStep.WORKOUT_ID_FIRESTORE_KEY);
         if (workoutName == null) return null;
@@ -143,6 +147,7 @@ public class WorkoutStepFirestoreHandler extends AbstractFirestoreHandler{
             int seconds = documentSnapshot.getLong(TimedTemplateWorkoutStep.SECONDS_FIRESTORE_KEY).intValue();
             return new TimedTemplateWorkoutStep(
                     documentSnapshot.getId(),
+                    set,
                     pos,
                     exercise,
                     DataHolder.getInstance().getTemplateByName(workoutName),
@@ -154,6 +159,7 @@ public class WorkoutStepFirestoreHandler extends AbstractFirestoreHandler{
             int maxReps = documentSnapshot.getLong(RepsTemplateWorkoutStep.MAX_REPS_FIRESTORE_KEY).intValue();
             return new RepsTemplateWorkoutStep(
                     documentSnapshot.getId(),
+                    set,
                     pos,
                     exercise,
                     DataHolder.getInstance().getTemplateByName(workoutName),
@@ -165,11 +171,12 @@ public class WorkoutStepFirestoreHandler extends AbstractFirestoreHandler{
 
     protected WorkoutStep convertDocumentToWorkoutStep(DocumentSnapshot documentSnapshot, Workout workout) {
         int pos = documentSnapshot.getLong(TemplateWorkoutStep.POS_IN_WORKOUT_FIRESTORE_KEY).intValue();
+        int set = documentSnapshot.getLong(TemplateWorkoutStep.SET_NUMBER_FIRESTORE_KEY).intValue();
         String exerciseName = documentSnapshot.getString(TemplateWorkoutStep.EXERCISE_ID_FIRESTORE_KEY);
         if (exerciseName == null) return null;
         String workoutName = documentSnapshot.getString(TemplateWorkoutStep.WORKOUT_ID_FIRESTORE_KEY);
         if (workoutName == null) return null;
-        return new WorkoutStep(documentSnapshot.getId(),pos,
+        return new WorkoutStep(documentSnapshot.getId(),set, pos,
                 DataHolder.getInstance().getExerciseByID(exerciseName),
                 workout);
     }

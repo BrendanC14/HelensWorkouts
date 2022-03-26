@@ -2,40 +2,42 @@ package com.cutlerdevelopment.helensworkouts.ui.dialog_fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.TextView;
+import android.view.WindowManager;
+import android.widget.ExpandableListView;
 
 import androidx.fragment.app.DialogFragment;
 
 import com.cutlerdevelopment.helensworkouts.R;
-import com.cutlerdevelopment.helensworkouts.model.Exercise;
-import com.cutlerdevelopment.helensworkouts.model.ExerciseType;
 import com.cutlerdevelopment.helensworkouts.model.WorkoutTemplate;
 import com.cutlerdevelopment.helensworkouts.model.data.DataHolder;
 import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableField;
-import com.cutlerdevelopment.helensworkouts.model.workout_steps.RepsTemplateWorkoutStep;
+import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableItem;
 import com.cutlerdevelopment.helensworkouts.model.workout_steps.TemplateWorkoutStep;
-import com.cutlerdevelopment.helensworkouts.model.workout_steps.TimedTemplateWorkoutStep;
+import com.cutlerdevelopment.helensworkouts.ui.listadapters.TemplateWorkoutStepListAdapter;
 import com.cutlerdevelopment.helensworkouts.utils.MyList;
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.util.LinkedHashMap;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 
-public class EditWorkoutTemplateDialogFragment extends DialogFragment {
+public class EditWorkoutTemplateDialogFragment extends DialogFragment
+        implements AddSetToTemplateDialogFragment.StepsChangedListener, TemplateWorkoutStepListAdapter.SetSelectedListener {
 
     WorkoutTemplate template;
     boolean newTemplate = false;
     TextInputEditText nameText;
     private LayoutInflater inflater;
-    private LinearLayout stepLayout;
-    private LinkedHashMap<TemplateWorkoutStep, View> stepToViewMap = new LinkedHashMap<>();
+    private ExpandableListView stepLayout;
+    //private LinkedHashMap<TemplateWorkoutStep, View> stepToViewMap = new LinkedHashMap<>();
+    private TemplateWorkoutStepListAdapter adapter;
+    private MyList<TemplateWorkoutStep> newSteps = new MyList<>();
+    private HashMap<TemplateWorkoutStep, MyList<AbstractSaveableField>> updatedSteps = new HashMap<>();
 
     public EditWorkoutTemplateDialogFragment(WorkoutTemplate template) {
 
@@ -58,100 +60,75 @@ public class EditWorkoutTemplateDialogFragment extends DialogFragment {
         templateFragment.findViewById(R.id.editTemplateAddStepsButton).setOnClickListener(view -> openAddStepsFragment());
         templateFragment.findViewById(R.id.editTemplateCancelButton).setOnClickListener(view -> dismiss());
         nameText.setText(template.getName());
-        showSteps();
-        return builder.create();
-    }
-
-    private void showSteps() {
-        for (TemplateWorkoutStep step : template.getTemplateSteps()) {
-            if (!stepToViewMap.containsKey(step)) {
-                if (step.getExercise().getType() == ExerciseType.REST || step.getExercise().getType() == ExerciseType.TIMED) {
-                    stepToViewMap.put(step, getTimedStepView((TimedTemplateWorkoutStep) step));
-                } else {
-                    stepToViewMap.put(step, getRepsStepView((RepsTemplateWorkoutStep) step));
-                }
+        adapter = new TemplateWorkoutStepListAdapter(getContext(), template, this);
+        stepLayout.setAdapter(adapter);
+        Dialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setOnKeyListener((dialogInterface, keyCode, keyEvent) -> {
+            if (keyCode == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP) {
+                dismiss();
+                return true;
             }
+            return false;
+        });
+        dialog.show();
+        dialog.getWindow().clearFlags( WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        return dialog;
+    }
+
+    @Override
+    public void stepsDeleted(MyList<TemplateWorkoutStep> deletedSteps) {
+        for (TemplateWorkoutStep deletedStep : deletedSteps) {
+            DataHolder.getInstance().deleteTemplateStep(deletedStep);
         }
-    }
-
-
-    private View getRepsStepView(RepsTemplateWorkoutStep step) {
-        View stepView = inflater.inflate(R.layout.view_reps_template_step, null);
-        TextView posText = stepView.findViewById(R.id.repsStepPosText);
-        TextView exerciseText = stepView.findViewById(R.id.repsStepExerciseText);
-        Button deleteButton = stepView.findViewById(R.id.repsStepDeleteButton);
-        EditText minRepsText = stepView.findViewById(R.id.repsStepMinEditText);
-        EditText maxRepsText = stepView.findViewById(R.id.repsStepsMaxEditText);
-
-        posText.setText(String.valueOf(step.getPositionInWorkout()));
-        exerciseText.setText(step.getExercise().getName());
-        deleteButton.setOnClickListener(view -> deleteStep(step));
-        minRepsText.setText(String.valueOf(step.getMinReps()));
-        maxRepsText.setText(String.valueOf(step.getMaxReps()));
-        stepLayout.addView(stepView);
-        return stepView;
-    }
-
-    private View getTimedStepView(TimedTemplateWorkoutStep step) {
-        View stepView = inflater.inflate(R.layout.view_timed_template_step, null);
-        TextView posText = stepView.findViewById(R.id.timedStepPosText);
-        TextView exerciseText = stepView.findViewById(R.id.timedStepExerciseText);
-        Button deleteButton = stepView.findViewById(R.id.timedStepDeleteButton);
-        EditText minsText = stepView.findViewById(R.id.timedStepMinEditText);
-        EditText secsText = stepView.findViewById(R.id.timedStepSecsEditText);
-
-        posText.setText(String.valueOf(step.getPositionInWorkout()));
-        exerciseText.setText(step.getExercise().getName());
-        deleteButton.setOnClickListener(view -> deleteStep(step));
-        minsText.setText(String.valueOf(step.getMinutes()));
-        secsText.setText(String.valueOf(step.getSeconds()));
-        stepLayout.addView(stepView);
-        return stepView;
-    }
-
-    private void deleteStep(TemplateWorkoutStep step) {
-        if (stepToViewMap.containsKey(step)) {
-            int position = getIndexOfStepInMap(step);
-            if (position < stepToViewMap.size() - 1) {
-                reducePositionOfEachStep(position);
-            }
-            View view = stepToViewMap.get(step);
-            stepLayout.removeView(view);
-            stepToViewMap.remove(step);
-        }
-    }
-
-    private void reducePositionOfEachStep(int startingPosition) {
-        MyList<TemplateWorkoutStep> steps = new MyList<>();
-        steps.addAll(stepToViewMap.keySet());
-        for (int i = startingPosition; i < steps.size(); i++) {
-            TemplateWorkoutStep step = steps.get(i);
-            int newPosition = step.getPositionInWorkout() -1;
-            step.setPositionInWorkout(newPosition);
-            View stepView = stepToViewMap.get(step);
-            if (stepView != null) {
-                TextView posText = step.getExercise().getType() == ExerciseType.TIMED || step.getExercise().getType() == ExerciseType.REST
-                        ? stepView.findViewById(R.id.timedStepPosText)
-                        : stepView.findViewById(R.id.repsStepPosText);
-                posText.setText(String.valueOf(newPosition));
-            }
-        }
-    }
-
-    private int getIndexOfStepInMap(TemplateWorkoutStep step) {
-        int pos = 0;
-        for (TemplateWorkoutStep mapStep : stepToViewMap.keySet()) {
-            if (step == mapStep) {
-                return pos;
-            }
-            pos++;
-        }
-        return pos;
+        adapter.refresh();
     }
 
     private void openAddStepsFragment() {
-        AddStepsToTemplateDialogFragment dialogFragment = new AddStepsToTemplateDialogFragment(this.template, this::stepsAdded);
+        AddSetToTemplateDialogFragment dialogFragment = new AddSetToTemplateDialogFragment(this.template, this);
         dialogFragment.show(getParentFragmentManager(), "AddStepsFragment");
+    }
+
+    private void editExistingSet(int set) {
+        AddSetToTemplateDialogFragment dialogFragment = new AddSetToTemplateDialogFragment(this.template, set, this);
+        dialogFragment.show(getParentFragmentManager(), "AddStepsFragment");
+    }
+
+    @Override
+    public void selectSet(int set) {
+        editExistingSet(set);
+    }
+
+    @Override
+    public void moveSetUp(int set) {
+        if (set == 1) return;
+        HashMap<Integer, MyList<TemplateWorkoutStep>> stepsBySet = template.getStepsBySet();
+        MyList<TemplateWorkoutStep> stepsToMoveUp = stepsBySet.get(set);
+        MyList<TemplateWorkoutStep> stepsToMoveDown = stepsBySet.get(set -1);
+        updateStepsSetNumber(stepsToMoveUp, set - 1);
+        updateStepsSetNumber(stepsToMoveDown, set);
+        adapter.refresh();
+    }
+
+    @Override
+    public void moveSetDown(int set) {
+        if (set == template.numberOfSets()) return;
+        HashMap<Integer, MyList<TemplateWorkoutStep>> stepsBySet = template.getStepsBySet();
+        MyList<TemplateWorkoutStep> stepsToMoveDown = stepsBySet.get(set);
+        MyList<TemplateWorkoutStep> stepsToMoveUp = stepsBySet.get(set +1);
+        updateStepsSetNumber(stepsToMoveDown, set + 1);
+        updateStepsSetNumber(stepsToMoveUp, set);
+        adapter.refresh();
+    }
+
+    private void updateStepsSetNumber(MyList<TemplateWorkoutStep> steps, int newSet) {
+        for (TemplateWorkoutStep step : steps) {
+            step.setSetNumber(newSet);
+            MyList<AbstractSaveableField> fields = new MyList<>(step.getSetNumberField());
+            DataHolder.getInstance().updateTemplateStep(step, fields);
+        }
+        template.updateStepsUnderSet(newSet, steps);
     }
 
     private void saveChanges() {
@@ -160,11 +137,13 @@ public class EditWorkoutTemplateDialogFragment extends DialogFragment {
         } else {
             updateExistingTemplate();
         }
-        dismiss();
+        close();
     }
 
-    private void stepsAdded() {
-        showSteps();
+    @Override
+    public void stepsAdded(MyList<TemplateWorkoutStep> steps) {
+        newSteps.addAll(steps);
+        adapter.refresh();
     }
 
     private void saveNewTemplate() {
@@ -184,54 +163,39 @@ public class EditWorkoutTemplateDialogFragment extends DialogFragment {
         if (!updatedFields.isEmpty()) {
             DataHolder.getInstance().updateTemplate(template, updatedFields);
         }
-        updateTemplateSteps();
+        saveNewTemplateSteps();
+        updateExistingTemplateSteps();
     }
 
-    private void updateTemplateSteps() {
-        for (Map.Entry<TemplateWorkoutStep, View> stepViewEntry : stepToViewMap.entrySet()) {
-            TemplateWorkoutStep step = stepViewEntry.getKey();
-            View stepView = stepViewEntry.getValue();
-            MyList<AbstractSaveableField> updatedFields = new MyList<>();
-            if (step.getExercise().getType() == ExerciseType.REST || step.getExercise().getType() == ExerciseType.TIMED) {
-                TimedTemplateWorkoutStep timedStep = (TimedTemplateWorkoutStep) step;
-                EditText minsText = stepView.findViewById(R.id.timedStepMinEditText);
-                EditText secsText = stepView.findViewById(R.id.timedStepSecsEditText);
-                int mins = getIntFromString(minsText.getText().toString());
-                int secs = getIntFromString(secsText.getText().toString());
-                if (mins != timedStep.getMinutes()) {
-                    timedStep.setMinutes(mins);
-                    updatedFields.add(timedStep.getMinutesField());
-                }
-                if (secs != timedStep.getSeconds()) {
-                    timedStep.setSeconds(secs);
-                    updatedFields.add(timedStep.getSecondsField());
-                }
-            } else {
-                RepsTemplateWorkoutStep repsStep = (RepsTemplateWorkoutStep) step;
-                EditText minRepsText = stepView.findViewById(R.id.repsStepMinEditText);
-                EditText maxRepsText = stepView.findViewById(R.id.repsStepsMaxEditText);
-                int min = getIntFromString(minRepsText.getText().toString());
-                int max = getIntFromString(maxRepsText.getText().toString());
-                if (min != repsStep.getMinReps()) {
-                    repsStep.setMinReps(min);
-                    updatedFields.add(repsStep.getMinRepsField());
-                }
-                if (max != repsStep.getMaxReps()) {
-                    repsStep.setMaxReps(max);
-                    updatedFields.add(repsStep.getMaxRepsField());
-                }
-            }
-            if (!updatedFields.isEmpty()) {
-                DataHolder.getInstance().updateTemplateStep(step, updatedFields);
-            }
+    private void saveNewTemplateSteps() {
+        DataHolder.getInstance().saveTemplateSteps(newSteps);
+    }
+
+    private void updateExistingTemplateSteps() {
+        for (Map.Entry<TemplateWorkoutStep, MyList<AbstractSaveableField>> stepFieldsPair : updatedSteps.entrySet()) {
+            DataHolder.getInstance().updateTemplateStep(stepFieldsPair.getKey(), stepFieldsPair.getValue());
         }
     }
 
-    private int getIntFromString(String value) {
-        if (value == null || value.equals("")) {
-            return 0;
-        } else {
-            return Integer.parseInt(value);
-        }
+    @Override
+    public void dismiss() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.MyDialogTheme);
+        builder.setTitle("Cancel");
+        builder.setMessage("Are you sure you want to cancel??");
+        builder.setPositiveButton("YES", (dialog, which) -> {
+            dialog.dismiss();
+            close();
+        });
+        builder.setNegativeButton("NO", (dialog, which) -> {
+            dialog.dismiss();
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+        alert.getButton(alert.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.yellow));
+        alert.getButton(alert.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.yellow));
+    }
+
+    private void close() {
+        super.dismiss();
     }
 }

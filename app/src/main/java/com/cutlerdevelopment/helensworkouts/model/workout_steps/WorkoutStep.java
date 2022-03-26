@@ -14,20 +14,20 @@ public class WorkoutStep extends TemplateWorkoutStep{
         this.workout = workout;
     }
 
-    public WorkoutStep(int positionInWorkout, Exercise exercise, Workout workout) {
-        super(positionInWorkout, exercise, workout);
+    public WorkoutStep(int setNumber, int positionInWorkout, Exercise exercise, Workout workout) {
+        super(setNumber, positionInWorkout, exercise, workout);
     }
 
-    public WorkoutStep(String id, int positionInWorkout, Exercise exercise, Workout workout) {
-        super(id, positionInWorkout, exercise, workout);
+    public WorkoutStep(String id,int setNumber,  int positionInWorkout, Exercise exercise, Workout workout) {
+        super(id, setNumber, positionInWorkout, exercise, workout);
     }
 
     public WorkoutStep(TemplateWorkoutStep template, Workout workout) {
-        super(template.getPositionInWorkout(), template.getExercise(), workout);
+        super(template.getSetNumber(), template.getPositionInWorkout(), template.getExercise(), workout);
         this.workout = workout;
     }
     public WorkoutStep(String id, TemplateWorkoutStep template, Workout workout) {
-        super(id, template.getPositionInWorkout(), template.getExercise(), workout);
+        super(id, template.getSetNumber(),template.getPositionInWorkout(), template.getExercise(), workout);
         this.workout = workout;
     }
 }

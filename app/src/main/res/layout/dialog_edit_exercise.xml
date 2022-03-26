@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/blue"
+    android:background="@color/dark_blue"
     android:layout_height="wrap_content">
 
 
@@ -14,7 +14,7 @@
         android:hint="Name"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:background="@color/dark_blue"
+        android:background="@color/blue"
         app:hintTextColor="@color/yellow"
         android:textColorHint="@color/yellow"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,7 +25,7 @@
             android:id="@+id/editExerciseNameInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/dark_blue"
+            android:background="@color/blue"
             android:gravity="center"
             android:textColor="@color/yellow"
             android:textColorHint="@color/yellow" />

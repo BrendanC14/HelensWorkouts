@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/dark_blue"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/setNameText"
+        android:layout_width="225dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toEndOf="@+id/setMoveUpButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/setOpenButton"
+        android:textColor="@color/yellow"
+        android:gravity="center_vertical"
+        android:layout_marginEnd="8dp"
+        app:layout_goneMarginStart="8dp"
+        android:textSize="18sp"
+        android:textStyle="bold">
+    </TextView>
+
+    <Button
+        android:id="@+id/setMoveUpButton"
+        android:layout_width="37dp"
+        android:layout_height="30dp"
+        android:focusable="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/dark_blue"
+        android:textSize="12sp"
+        android:text="^">
+
+    </Button>
+
+    <Button
+        android:id="@+id/setMoveDownButton"
+        android:layout_width="36dp"
+        android:layout_height="30dp"
+        android:focusable="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/setMoveUpButton"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="16dp"
+        android:textSize="6sp"
+        android:textColor="@color/dark_blue"
+        android:text="v">
+
+    </Button>
+
+    <Button
+        android:id="@+id/setOpenButton"
+        android:layout_width="37dp"
+        android:layout_height="40dp"
+        android:focusable="false"
+        app:layout_constraintTop_toTopOf="@id/setNameText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/setNameText"
+        android:layout_marginEnd="8dp"
+        android:textColor="@color/dark_blue"
+        android:text=">">
+
+    </Button>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
