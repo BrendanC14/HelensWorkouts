@@ -25,15 +25,18 @@
             android:textSize="18sp">
         </TextView>
 
-        <Button
-            android:id="@+id/dateButton"
+
+        <Spinner
+            android:id="@+id/dateTemplateSpinner"
             android:layout_width="300dp"
             android:layout_height="50dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
-            android:layout_gravity="center"
-            android:text="No workout scheduled">
-        </Button>
+            android:background="@null"
+            android:layout_gravity="center">
+
+        </Spinner>
+
     </LinearLayout>
 
 

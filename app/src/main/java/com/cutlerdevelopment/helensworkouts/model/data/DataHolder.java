@@ -2,7 +2,9 @@ package com.cutlerdevelopment.helensworkouts.model.data;
 
 import com.cutlerdevelopment.helensworkouts.integration.ExerciseFirestoreHandler;
 import com.cutlerdevelopment.helensworkouts.integration.IExerciseFirestoreListener;
+import com.cutlerdevelopment.helensworkouts.integration.IScheduleListener;
 import com.cutlerdevelopment.helensworkouts.integration.IWorkoutFirestoreListener;
+import com.cutlerdevelopment.helensworkouts.integration.ScheduleFirestoreHandler;
 import com.cutlerdevelopment.helensworkouts.integration.WorkoutFirestoreHandler;
 import com.cutlerdevelopment.helensworkouts.integration.WorkoutStepFirestoreHandler;
 import com.cutlerdevelopment.helensworkouts.model.Exercise;
@@ -21,7 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestoreListener {
+public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestoreListener, IScheduleListener {
 
     private static DataHolder instance;
     public static DataHolder getInstance() {
@@ -196,6 +198,7 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
         for (WorkoutTemplate template : templates) {
             templateRetrieved(template);
         }
+        notifications.trigger((IDataListener listener) -> listener.allTemplatesRetrieved(templates));
     }
 
     @Override
@@ -347,6 +350,42 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
 
     @Override
     public void failedToRetrieveWorkoutSteps(String collectionName, Exception e) {
+
+    }
+
+    private final ScheduleFirestoreHandler scheduleFirestoreHandler = new ScheduleFirestoreHandler(this);
+    private final HashMap<Date, String> templateIDByDateMap = new HashMap<>();
+
+    public void saveTemplateToDate(Date date, WorkoutTemplate template) {
+        if (!templateIDByDateMap.containsKey(date) ||
+                !templateIDByDateMap.get(date).equals(template.getId())) {
+            scheduleFirestoreHandler.saveTemplateIDOnDate(date, template.getId());
+        }
+    }
+
+    public void getTemplateForDate(Date date) {
+        scheduleFirestoreHandler.getTemplateIDForDate(date);
+    }
+
+    public void deleteTemplateOnDate(Date date) {
+        if (templateIDByDateMap.containsKey(date)) {
+            scheduleFirestoreHandler.deleteTemplateOnDate(date);
+            templateIDByDateMap.remove(date);
+        }
+    }
+
+    @Override
+    public void templateSavedOnDate(Date date, String templateID) {
+        WorkoutTemplate template = templateByIDMap.get(templateID);
+        templateIDByDateMap.put(date, templateID);
+        notifications.trigger((IDataListener listener) -> listener.templateSavedToDate(date, template));
+    }
+
+    @Override
+    public void templateRetrievedForDate(Date date, String templateID) {
+        WorkoutTemplate template = templateByIDMap.get(templateID);
+        templateIDByDateMap.put(date, templateID);
+        notifications.trigger((IDataListener listener) -> listener.templateRetrievedForDate(date, template));
 
     }
 }

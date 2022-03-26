@@ -18,6 +18,7 @@ import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableItem
 import com.cutlerdevelopment.helensworkouts.ui.listadapters.WorkoutTemplateListAdapter;
 import com.cutlerdevelopment.helensworkouts.utils.MyList;
 
+import java.util.Date;
 import java.util.Map;
 
 public class WorkoutTemplatesDialogFragment extends AbstractSaveableItemDialogFragment{
@@ -70,6 +71,21 @@ public class WorkoutTemplatesDialogFragment extends AbstractSaveableItemDialogFr
 
     @Override
     public void workoutChanged(Workout workout) {
+
+    }
+
+    @Override
+    public void allTemplatesRetrieved(MyList<WorkoutTemplate> templates) {
+
+    }
+
+    @Override
+    public void templateSavedToDate(Date date, WorkoutTemplate template) {
+
+    }
+
+    @Override
+    public void templateRetrievedForDate(Date date, WorkoutTemplate template) {
 
     }
 }
