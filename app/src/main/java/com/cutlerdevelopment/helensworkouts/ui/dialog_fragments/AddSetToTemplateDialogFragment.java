@@ -76,8 +76,8 @@ public class AddSetToTemplateDialogFragment extends DialogFragment {
         exerciseSpinner = stepsFragment.findViewById(R.id.addStepsExerciseSpinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.spinner_item, DataHolder.getInstance().getAllExerciseNames());
         exerciseSpinner.setAdapter(adapter);
-        stepsFragment.findViewById(R.id.addStepsAddSetButton).setOnClickListener(view -> addStep(false));
-        stepsFragment.findViewById(R.id.addStepsAddRestButton).setOnClickListener(view -> addStep(true));
+        stepsFragment.findViewById(R.id.addStepsAddSetButton).setOnClickListener(view -> addStep(false, exerciseSpinner.getSelectedItem().toString()));
+        stepsFragment.findViewById(R.id.addStepsAddRestButton).setOnClickListener(view -> addStep(true, exerciseSpinner.getSelectedItem().toString()));
         stepsFragment.findViewById(R.id.addStepsRepeatButton).setOnClickListener(view -> repeatSteps());
         stepsFragment.findViewById(R.id.addStepsCancelButton).setOnClickListener(view -> dismiss());
         stepLayout = stepsFragment.findViewById(R.id.addStepsLayout);
@@ -85,11 +85,11 @@ public class AddSetToTemplateDialogFragment extends DialogFragment {
         if (template.getStepsBySet().containsKey(setNumber)) {
             for (TemplateWorkoutStep step : template.getStepsBySet().get(setNumber)) {
                 if (step.getExercise().getType() == ExerciseType.REPS || step.getExercise().getType() == ExerciseType.WEIGHT) {
-                    RepsTemplateWorkoutStep repsStep = (RepsTemplateWorkoutStep) step;
-                    stepToViewMap.put(repsStep, getRepsStepView(repsStep));
+                    RepsTemplateWorkoutStep repsTemplate = (RepsTemplateWorkoutStep) step;
+                    stepToViewMap.put(repsTemplate, getRepsStepView(repsTemplate));
                 } else {
-                    TimedTemplateWorkoutStep timedStep = (TimedTemplateWorkoutStep) step;
-                    stepToViewMap.put(timedStep, getTimedStepView(timedStep));
+                    TimedTemplateWorkoutStep timedTemplate = (TimedTemplateWorkoutStep) step;
+                    stepToViewMap.put(timedTemplate, getTimedStepView(timedTemplate));
 
                 }
             }
@@ -109,11 +109,10 @@ public class AddSetToTemplateDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    private TemplateWorkoutStep addStep(boolean isRest) {
-        String selected = exerciseSpinner.getSelectedItem().toString();
+    private TemplateWorkoutStep addStep(boolean isRest, String exerciseName) {
         Exercise exercise = isRest
                 ? Exercise.getRestExercise()
-                : DataHolder.getInstance().getExerciseByName(selected);
+                : DataHolder.getInstance().getExerciseByName(exerciseName);
         if (exercise != null) {
             numItems++;
             if (exercise.getType() == ExerciseType.TIMED || exercise.getType() == ExerciseType.REST) {
@@ -146,19 +145,19 @@ public class AddSetToTemplateDialogFragment extends DialogFragment {
 
     private View getRepsStepView(RepsTemplateWorkoutStep step) {
         View stepView = inflater.inflate(R.layout.view_reps_template_step, null);
-        TextView posText = stepView.findViewById(R.id.repsStepPosText);
-        TextView exerciseText = stepView.findViewById(R.id.repsStepExerciseText);
-        Button deleteButton = stepView.findViewById(R.id.repsStepDeleteButton);
+        TextView posText = stepView.findViewById(R.id.repsTemplatePosText);
+        TextView exerciseText = stepView.findViewById(R.id.repsTemplateExerciseText);
+        Button deleteButton = stepView.findViewById(R.id.repsTemplateDeleteButton);
 
         posText.setText(String.valueOf(step.getPositionInWorkout()));
         exerciseText.setText(step.getExercise().getName());
         deleteButton.setOnClickListener(view -> deleteStep(step));
         if (step.getMinReps() > 0) {
-            EditText minRepsText = stepView.findViewById(R.id.repsStepMinEditText);
+            EditText minRepsText = stepView.findViewById(R.id.repsTemplateMinEditText);
             minRepsText.setText(String.valueOf(step.getMinReps()));
         }
         if (step.getMaxReps() > 0) {
-            EditText maxRepsText = stepView.findViewById(R.id.repsStepsMaxEditText  );
+            EditText maxRepsText = stepView.findViewById(R.id.repsTemplatesMaxEditText  );
             maxRepsText.setText(String.valueOf(step.getMaxReps()));
         }
         stepLayout.addView(stepView);
@@ -167,19 +166,19 @@ public class AddSetToTemplateDialogFragment extends DialogFragment {
 
     private View getTimedStepView(TimedTemplateWorkoutStep step) {
         View stepView = inflater.inflate(R.layout.view_timed_template_step, null);
-        TextView posText = stepView.findViewById(R.id.timedStepPosText);
-        TextView exerciseText = stepView.findViewById(R.id.timedStepExerciseText);
-        Button deleteButton = stepView.findViewById(R.id.timedStepDeleteButton);
+        TextView posText = stepView.findViewById(R.id.timedTemplatePosText);
+        TextView exerciseText = stepView.findViewById(R.id.timedTemplateExerciseText);
+        Button deleteButton = stepView.findViewById(R.id.timedTemplateDeleteButton);
 
         posText.setText(String.valueOf(step.getPositionInWorkout()));
         exerciseText.setText(step.getExercise().getName());
         deleteButton.setOnClickListener(view -> deleteStep(step));
         if (step.getMinutes() > 0) {
-            EditText minsText = stepView.findViewById(R.id.timedStepMinEditText);
+            EditText minsText = stepView.findViewById(R.id.timedTemplateMinEditText);
             minsText.setText(String.valueOf(step.getMinutes()));
         }
         if (step.getSeconds() > 0) {
-            EditText secsText = stepView.findViewById(R.id.timedStepSecsEditText);
+            EditText secsText = stepView.findViewById(R.id.timedTemplateSecsEditText);
             secsText.setText(String.valueOf(step.getSeconds()));
         }
         stepLayout.addView(stepView);
@@ -191,22 +190,22 @@ public class AddSetToTemplateDialogFragment extends DialogFragment {
             repeatableSteps.addAll(stepToViewMap.keySet());
         }
         for (TemplateWorkoutStep step : repeatableSteps) {
-            TemplateWorkoutStep newStep = addStep(step.getExercise().getType() == ExerciseType.REST);
+            TemplateWorkoutStep newStep = addStep(step.getExercise().getType() == ExerciseType.REST, step.getExercise().getName());
             View currentView = stepToViewMap.get(step);
             View newView = stepToViewMap.get(newStep);
             if (currentView != null && newStep != null && newView != null) {
                 if (newStep.getExercise().getType() == ExerciseType.TIMED || newStep.getExercise().getType() == ExerciseType.REST) {
-                    String currentMins = ((EditText)currentView.findViewById(R.id.timedStepMinEditText)).getText().toString();
-                    String currentSecs = ((EditText)currentView.findViewById(R.id.timedStepSecsEditText)).getText().toString();
+                    String currentMins = ((EditText)currentView.findViewById(R.id.timedTemplateMinEditText)).getText().toString();
+                    String currentSecs = ((EditText)currentView.findViewById(R.id.timedTemplateSecsEditText)).getText().toString();
 
-                    ((EditText)newView.findViewById(R.id.timedStepMinEditText)).setText(currentMins);
-                    ((EditText)newView.findViewById(R.id.timedStepSecsEditText)).setText(currentSecs);
+                    ((EditText)newView.findViewById(R.id.timedTemplateMinEditText)).setText(currentMins);
+                    ((EditText)newView.findViewById(R.id.timedTemplateSecsEditText)).setText(currentSecs);
                 } else {
-                    String currentMin = ((EditText)currentView.findViewById(R.id.repsStepMinEditText)).getText().toString();
-                    String currentMax = ((EditText)currentView.findViewById(R.id.repsStepsMaxEditText)).getText().toString();
+                    String currentMin = ((EditText)currentView.findViewById(R.id.repsTemplateMinEditText)).getText().toString();
+                    String currentMax = ((EditText)currentView.findViewById(R.id.repsTemplatesMaxEditText)).getText().toString();
 
-                    ((EditText)newView.findViewById(R.id.repsStepMinEditText)).setText(currentMin);
-                    ((EditText)newView.findViewById(R.id.repsStepsMaxEditText)).setText(currentMax);
+                    ((EditText)newView.findViewById(R.id.repsTemplateMinEditText)).setText(currentMin);
+                    ((EditText)newView.findViewById(R.id.repsTemplatesMaxEditText)).setText(currentMax);
                 }
             }
         }
@@ -240,8 +239,8 @@ public class AddSetToTemplateDialogFragment extends DialogFragment {
             View stepView = stepToViewMap.get(step);
             if (stepView != null) {
                 TextView posText = step.getExercise().getType() == ExerciseType.TIMED || step.getExercise().getType() == ExerciseType.REST
-                        ? stepView.findViewById(R.id.timedStepPosText)
-                        : stepView.findViewById(R.id.repsStepPosText);
+                        ? stepView.findViewById(R.id.timedTemplatePosText)
+                        : stepView.findViewById(R.id.repsTemplatePosText);
                 posText.setText(String.valueOf(newPosition));
             }
         }
@@ -270,22 +269,22 @@ public class AddSetToTemplateDialogFragment extends DialogFragment {
 
     private void updateStepWithNumbers(TemplateWorkoutStep step) {
         if (step.getExercise().getType() == ExerciseType.TIMED || step.getExercise().getType() == ExerciseType.REST) {
-            TimedTemplateWorkoutStep timedStep = (TimedTemplateWorkoutStep) step;
+            TimedTemplateWorkoutStep timedTemplate = (TimedTemplateWorkoutStep) step;
             View stepView = stepToViewMap.get(step);
             if (stepView != null) {
-                int mins = getIntFromString(((EditText) stepView.findViewById(R.id.timedStepMinEditText)).getText().toString());
-                int secs = getIntFromString(((EditText) stepView.findViewById(R.id.timedStepSecsEditText)).getText().toString());
-                timedStep.setMinutes(mins);
-                timedStep.setSeconds(secs);
+                int mins = getIntFromString(((EditText) stepView.findViewById(R.id.timedTemplateMinEditText)).getText().toString());
+                int secs = getIntFromString(((EditText) stepView.findViewById(R.id.timedTemplateSecsEditText)).getText().toString());
+                timedTemplate.setMinutes(mins);
+                timedTemplate.setSeconds(secs);
             }
         } else {
-            RepsTemplateWorkoutStep repsStep = (RepsTemplateWorkoutStep) step;
+            RepsTemplateWorkoutStep repsTemplate = (RepsTemplateWorkoutStep) step;
             View stepView = stepToViewMap.get(step);
             if (stepView != null) {
-                int min = getIntFromString(((EditText) stepView.findViewById(R.id.repsStepMinEditText)).getText().toString());
-                int max = getIntFromString(((EditText) stepView.findViewById(R.id.repsStepsMaxEditText)).getText().toString());
-                repsStep.setMinReps(min);
-                repsStep.setMaxReps(max);
+                int min = getIntFromString(((EditText) stepView.findViewById(R.id.repsTemplateMinEditText)).getText().toString());
+                int max = getIntFromString(((EditText) stepView.findViewById(R.id.repsTemplatesMaxEditText)).getText().toString());
+                repsTemplate.setMinReps(min);
+                repsTemplate.setMaxReps(max);
             }
         }
     }

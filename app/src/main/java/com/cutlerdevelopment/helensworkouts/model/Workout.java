@@ -2,8 +2,12 @@ package com.cutlerdevelopment.helensworkouts.model;
 
 import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableField;
 import com.cutlerdevelopment.helensworkouts.model.saveables.SaveableDate;
+import com.cutlerdevelopment.helensworkouts.model.workout_steps.RepsTemplateWorkoutStep;
+import com.cutlerdevelopment.helensworkouts.model.workout_steps.RepsWorkoutStep;
 import com.cutlerdevelopment.helensworkouts.model.workout_steps.TemplateWorkoutStep;
-import com.cutlerdevelopment.helensworkouts.model.workout_steps.WorkoutStep;
+import com.cutlerdevelopment.helensworkouts.model.workout_steps.TimedTemplateWorkoutStep;
+import com.cutlerdevelopment.helensworkouts.model.workout_steps.TimedWorkoutStep;
+import com.cutlerdevelopment.helensworkouts.model.workout_steps.WeightWorkoutStep;
 import com.cutlerdevelopment.helensworkouts.utils.MyList;
 
 import java.util.Date;
@@ -20,16 +24,6 @@ public class Workout extends WorkoutTemplate{
         this.date.setFieldValue(date);
     }
 
-    private MyList<WorkoutStep> steps = new MyList<>();
-
-    public MyList<WorkoutStep> getSteps() {
-        return steps;
-    }
-
-    public void addWorkoutStep(WorkoutStep step) {
-        steps.addIfNew(step);
-    }
-
     public Workout(String name, Date date) {
         super(name);
         this.date = new SaveableDate(DATE_FIRESTORE_KEY, date);
@@ -42,7 +36,20 @@ public class Workout extends WorkoutTemplate{
         super(template.getName());
         this.date = new SaveableDate(DATE_FIRESTORE_KEY, date );
         for (TemplateWorkoutStep templateStep : template.getTemplateSteps()) {
-            steps.add(new WorkoutStep(templateStep, this));
+            ExerciseType type = templateStep.getExercise().getType();
+            if (type == ExerciseType.REST || type == ExerciseType.TIMED) {
+                TimedWorkoutStep step = new TimedWorkoutStep((TimedTemplateWorkoutStep) templateStep);
+                addWorkoutStep(step);
+                step.setWorkout(this);
+            } else if (type == ExerciseType.WEIGHT) {
+                WeightWorkoutStep step = new WeightWorkoutStep((RepsTemplateWorkoutStep) templateStep);
+                addWorkoutStep(step);
+                step.setWorkout(this);
+            } else {
+                RepsWorkoutStep step = new RepsWorkoutStep((RepsTemplateWorkoutStep) templateStep);
+                addWorkoutStep(step);
+                step.setWorkout(this);
+            }
         }
     }
 

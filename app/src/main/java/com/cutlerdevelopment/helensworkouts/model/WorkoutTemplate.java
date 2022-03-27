@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class WorkoutTemplate extends AbstractSaveableItem {
 
-    private final HashMap<Integer, MyList<TemplateWorkoutStep>> steps = new HashMap<>();
+    protected final HashMap<Integer, MyList<TemplateWorkoutStep>> steps = new HashMap<>();
     public MyList<TemplateWorkoutStep> getTemplateSteps() {
         MyList<TemplateWorkoutStep> returnList = new MyList<>();
         for (Map.Entry<Integer, MyList<TemplateWorkoutStep>> stepsEntry : steps.entrySet()) {

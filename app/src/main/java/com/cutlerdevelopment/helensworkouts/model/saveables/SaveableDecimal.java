@@ -14,7 +14,7 @@ public class SaveableDecimal extends AbstractSaveableField {
 
     @Override
     public Object getValueAsObject() {
-        return fieldValue;
+        return fieldValue.toString();
     }
 
     public SaveableDecimal(String fieldName, BigDecimal fieldValue) {

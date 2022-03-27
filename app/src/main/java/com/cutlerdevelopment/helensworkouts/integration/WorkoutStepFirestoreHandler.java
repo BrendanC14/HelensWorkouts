@@ -6,8 +6,10 @@ import com.cutlerdevelopment.helensworkouts.model.Notifications;
 import com.cutlerdevelopment.helensworkouts.model.Workout;
 import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableField;
 import com.cutlerdevelopment.helensworkouts.model.workout_steps.RepsTemplateWorkoutStep;
+import com.cutlerdevelopment.helensworkouts.model.workout_steps.RepsWorkoutStep;
 import com.cutlerdevelopment.helensworkouts.model.workout_steps.TimedTemplateWorkoutStep;
-import com.cutlerdevelopment.helensworkouts.model.workout_steps.WorkoutStep;
+import com.cutlerdevelopment.helensworkouts.model.workout_steps.TimedWorkoutStep;
+import com.cutlerdevelopment.helensworkouts.model.workout_steps.WeightWorkoutStep;
 import com.cutlerdevelopment.helensworkouts.model.WorkoutTemplate;
 import com.cutlerdevelopment.helensworkouts.model.workout_steps.TemplateWorkoutStep;
 import com.cutlerdevelopment.helensworkouts.model.data.DataHolder;
@@ -18,6 +20,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 
 public class WorkoutStepFirestoreHandler extends AbstractFirestoreHandler{
@@ -50,12 +53,12 @@ public class WorkoutStepFirestoreHandler extends AbstractFirestoreHandler{
 
     public void saveTemplateSteps(MyList<TemplateWorkoutStep> steps) {
         for(TemplateWorkoutStep step : steps) {
-            addDocument(getStepsCollectionReference(step.getWorkout()), step);
+            addDocument(getStepsCollectionReference(step.getTemplate()), step);
         }
     }
 
-    public void saveWorkoutSteps(MyList<WorkoutStep> steps) {
-        for(WorkoutStep step : steps) {
+    public void saveWorkoutSteps(MyList<TemplateWorkoutStep> steps) {
+        for(TemplateWorkoutStep step : steps) {
             addDocument(getWorkoutCollectionReference(step.getWorkout()), step);
         }
     }
@@ -65,7 +68,7 @@ public class WorkoutStepFirestoreHandler extends AbstractFirestoreHandler{
         if (templateHandler) {
             notifications.trigger((IWorkoutFirestoreListener listener) -> listener.templateStepSaved((TemplateWorkoutStep) item));
         } else {
-            notifications.trigger((IWorkoutFirestoreListener listener) -> listener.workoutStepSaved((WorkoutStep) item));
+            notifications.trigger((IWorkoutFirestoreListener listener) -> listener.workoutStepSaved((TemplateWorkoutStep) item));
         }
     }
 
@@ -85,7 +88,7 @@ public class WorkoutStepFirestoreHandler extends AbstractFirestoreHandler{
     }
 
     public void updateExistingTemplateStep(TemplateWorkoutStep step, MyList<AbstractSaveableField> updatedFields) {
-        this.updateDocumentFields(step, updatedFields, getStepsCollectionReference(step.getWorkout()).document(step.getId()));
+        this.updateDocumentFields(step, updatedFields, getStepsCollectionReference(step.getTemplate()).document(step.getId()));
     }
 
 
@@ -114,7 +117,7 @@ public class WorkoutStepFirestoreHandler extends AbstractFirestoreHandler{
             }
             notifications.trigger((IWorkoutFirestoreListener listener) -> listener.templateStepsRetrieved((WorkoutTemplate) parent, items));
         } else {
-            MyList<WorkoutStep> items = new MyList<>();
+            MyList<TemplateWorkoutStep> items = new MyList<>();
             for (DocumentSnapshot documentSnapshot : result) {
                 items.add(convertDocumentToWorkoutStep(documentSnapshot, (Workout) parent));
             }
@@ -129,7 +132,7 @@ public class WorkoutStepFirestoreHandler extends AbstractFirestoreHandler{
     }
 
     public void deleteStep(TemplateWorkoutStep step) {
-        this.deleteDocument(getStepsCollectionReference(step.getWorkout()).document(step.getId()));
+        this.deleteDocument(getStepsCollectionReference(step.getTemplate()).document(step.getId()));
     }
 
     @Override
@@ -169,15 +172,61 @@ public class WorkoutStepFirestoreHandler extends AbstractFirestoreHandler{
         }
     }
 
-    protected WorkoutStep convertDocumentToWorkoutStep(DocumentSnapshot documentSnapshot, Workout workout) {
+    protected TemplateWorkoutStep convertDocumentToWorkoutStep(DocumentSnapshot documentSnapshot, Workout workout) {
         int pos = documentSnapshot.getLong(TemplateWorkoutStep.POS_IN_WORKOUT_FIRESTORE_KEY).intValue();
         int set = documentSnapshot.getLong(TemplateWorkoutStep.SET_NUMBER_FIRESTORE_KEY).intValue();
         String exerciseName = documentSnapshot.getString(TemplateWorkoutStep.EXERCISE_ID_FIRESTORE_KEY);
         if (exerciseName == null) return null;
         String workoutName = documentSnapshot.getString(TemplateWorkoutStep.WORKOUT_ID_FIRESTORE_KEY);
         if (workoutName == null) return null;
-        return new WorkoutStep(documentSnapshot.getId(),set, pos,
-                DataHolder.getInstance().getExerciseByID(exerciseName),
-                workout);
+
+        Exercise exercise = DataHolder.getInstance().getExerciseByName(exerciseName);
+        if (exercise.getType() == ExerciseType.TIMED || exercise.getType() == ExerciseType.REST) {
+            int minutes = documentSnapshot.getLong(TimedTemplateWorkoutStep.MINUTES_FIRESTORE_KEY).intValue();
+            int seconds = documentSnapshot.getLong(TimedTemplateWorkoutStep.SECONDS_FIRESTORE_KEY).intValue();
+            int actualMins = documentSnapshot.getLong(TimedWorkoutStep.ACTUAL_MINS_FIRESTORE_KEY).intValue();
+            int actualSecs = documentSnapshot.getLong(TimedWorkoutStep.ACTUAL_SECS_FIRESTORE_KEY).intValue();
+            return new TimedWorkoutStep(
+                    documentSnapshot.getId(),
+                    set,
+                    pos,
+                    exercise,
+                    DataHolder.getInstance().getTemplateByName(workoutName),
+                    minutes,
+                    seconds,
+                    actualMins,
+                    actualSecs);
+
+        }  else if (exercise.getType() == ExerciseType.REPS) {
+            int minReps = documentSnapshot.getLong(RepsTemplateWorkoutStep.MIN_REPS_FIRESTORE_KEY).intValue();
+            int maxReps = documentSnapshot.getLong(RepsTemplateWorkoutStep.MAX_REPS_FIRESTORE_KEY).intValue();
+            int actualReps = documentSnapshot.getLong(RepsWorkoutStep.ACTUAL_REPS_FIRESTORE_KEY).intValue();
+            return new RepsWorkoutStep(
+                    documentSnapshot.getId(),
+                    set,
+                    pos,
+                    exercise,
+                    DataHolder.getInstance().getTemplateByName(workoutName),
+                    minReps,
+                    maxReps,
+                    actualReps
+            );
+        } else {
+            int minReps = documentSnapshot.getLong(WeightWorkoutStep.MIN_REPS_FIRESTORE_KEY).intValue();
+            int maxReps = documentSnapshot.getLong(WeightWorkoutStep.MAX_REPS_FIRESTORE_KEY).intValue();
+            int actualReps = documentSnapshot.getLong(WeightWorkoutStep.ACTUAL_REPS_FIRESTORE_KEY).intValue();
+            BigDecimal actualWeight = BigDecimal.valueOf(Integer.parseInt(documentSnapshot.getString(WeightWorkoutStep.ACTUAL_WEIGHT_FIRESTORE_KEY)));
+            return new WeightWorkoutStep(
+                    documentSnapshot.getId(),
+                    set,
+                    pos,
+                    exercise,
+                    DataHolder.getInstance().getTemplateByName(workoutName),
+                    minReps,
+                    maxReps,
+                    actualReps,
+                    actualWeight);
+
+        }
     }
 }

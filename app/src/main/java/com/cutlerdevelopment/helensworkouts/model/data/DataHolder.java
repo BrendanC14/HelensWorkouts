@@ -11,7 +11,6 @@ import com.cutlerdevelopment.helensworkouts.model.Exercise;
 import com.cutlerdevelopment.helensworkouts.model.ExerciseType;
 import com.cutlerdevelopment.helensworkouts.model.Notifications;
 import com.cutlerdevelopment.helensworkouts.model.Workout;
-import com.cutlerdevelopment.helensworkouts.model.workout_steps.WorkoutStep;
 import com.cutlerdevelopment.helensworkouts.model.WorkoutTemplate;
 import com.cutlerdevelopment.helensworkouts.model.workout_steps.TemplateWorkoutStep;
 import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableField;
@@ -211,7 +210,7 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
     }
     @Override
     public void templateStepSaved(TemplateWorkoutStep step) {
-        step.getWorkout().addWorkoutStep(step);
+        step.getTemplate().addWorkoutStep(step);
     }
 
     @Override
@@ -249,7 +248,7 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
 
     public void deleteTemplateStep(TemplateWorkoutStep step) {
         workoutStepFirestoreHandler.deleteStep(step);
-        step.getWorkout().removeStep(step);
+        step.getTemplate().removeStep(step);
     }
 
     private final WorkoutFirestoreHandler workoutFirestoreHandler = new WorkoutFirestoreHandler(this, false);
@@ -262,7 +261,7 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
 
     @Override
     public void workoutSaved(Workout workout) {
-        workoutStepFirestoreHandler.saveWorkoutSteps(workout.getSteps());
+        workoutStepFirestoreHandler.saveWorkoutSteps(workout.getTemplateSteps());
         workoutByDateMap.put(workout.getDate(), workout);
         notifications.trigger((IDataListener listener) -> listener.workoutAdded(workout));
     }
@@ -321,27 +320,27 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
     }
 
     @Override
-    public void workoutStepSaved(WorkoutStep step) {
-        step.getWorkout().addWorkoutStep(step);
+    public void workoutStepSaved(TemplateWorkoutStep step) {
+        step.getTemplate().addWorkoutStep(step);
     }
 
     @Override
-    public void failedToSaveWorkoutStep(WorkoutStep step, Exception e) {
-
-    }
-
-    @Override
-    public void workoutUpdated(WorkoutStep step) {
+    public void failedToSaveWorkoutStep(TemplateWorkoutStep step, Exception e) {
 
     }
 
     @Override
-    public void failedToUpdateWorkout(WorkoutStep step, Exception e) {
+    public void workoutUpdated(TemplateWorkoutStep step) {
 
     }
 
     @Override
-    public void workoutStepsRetrieved(Workout workout, MyList<WorkoutStep> steps) {
+    public void failedToUpdateWorkout(TemplateWorkoutStep step, Exception e) {
+
+    }
+
+    @Override
+    public void workoutStepsRetrieved(Workout workout, MyList<TemplateWorkoutStep> steps) {
         for (TemplateWorkoutStep step : steps) {
             workout.addWorkoutStep(step);
         }

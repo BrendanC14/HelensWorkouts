@@ -3,6 +3,7 @@ package com.cutlerdevelopment.helensworkouts.ui;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
 
     private LinearLayout layout;
     private LinkedHashMap<Date, Spinner> spinnerByDateMap = new LinkedHashMap<>();
+    private HashMap<Date, Button> startButtonByDateMap = new HashMap<>();
     private HashMap<String, WorkoutTemplate> templatesByNameMap = new HashMap<>();
     MyList<String> templateNames = new MyList<>();
     private final String NO_TEMPLATE_NAME = "No Workout scheduled";
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         dateText.setText(dateString);
         spinner.setAdapter(adapter);
         spinnerByDateMap.put(date, spinner);
+        startButtonByDateMap.put(date, dateView.findViewById(R.id.dateStartWorkoutButton));
         layout.addView(dateView);
     }
 
@@ -121,11 +124,26 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
     private void spinnerItemSelected(Date date, String templateSelected) {
         if (templateSelected == NO_TEMPLATE_NAME) {
             DataHolder.getInstance().deleteTemplateOnDate(date);
+            Button button = startButtonByDateMap.get(date);
+            if (button != null) {
+                button.setVisibility(View.GONE);
+            }
         } else {
             WorkoutTemplate template = templatesByNameMap.get(templateSelected);
             if (template != null) DataHolder.getInstance().saveTemplateToDate(date, template);
+            Button button = startButtonByDateMap.get(date);
+            if (button != null) {
+                button.setVisibility(View.VISIBLE);
+                button.setOnClickListener(view -> startWorkout(template));
+            }
 
         }
+    }
+
+    private void startWorkout(WorkoutTemplate template) {
+        Intent intent = new Intent(MainActivity.this, CompleteWorkoutActivity.class);
+        intent.putExtra("TemplateID", template.getId());
+        startActivity(intent);
     }
 
     @Override

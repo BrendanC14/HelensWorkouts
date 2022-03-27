@@ -13,6 +13,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 
@@ -94,8 +95,12 @@ public class ExerciseFirestoreHandler extends AbstractFirestoreHandler{
     @Override
     protected Exercise convertDocumentToItem(DocumentSnapshot documentSnapshot) {
         String name = documentSnapshot.getString(AbstractSaveableItem.NAME_FIRESTORE_KEY);
+        String weightString = documentSnapshot.getString(Exercise.RECORD_WEIGHT_FIRESTORE_KEY);
+        BigDecimal recordWeight = weightString == "" || weightString == null
+                ? BigDecimal.ZERO
+                : BigDecimal.valueOf(Integer.parseInt(weightString));
         if (name == null) return null;
         ExerciseType type = ExerciseType.valueOf(documentSnapshot.getString(Exercise.TYPE_FIRESTORE_KEY));
-        return new Exercise(documentSnapshot.getId(), name, type);
+        return new Exercise(documentSnapshot.getId(), name, type, recordWeight);
     }
 }

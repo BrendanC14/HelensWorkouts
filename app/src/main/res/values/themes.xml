@@ -23,4 +23,8 @@
     <style name="ButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
         <item name="android:textColor">@color/yellow</item>
     </style>
+
+    <style name="AltButtonStyle" parent="TextAppearance.AppCompat.Button">
+        <item name="android:background">@color/dark_blue</item>
+    </style>
 </resources>

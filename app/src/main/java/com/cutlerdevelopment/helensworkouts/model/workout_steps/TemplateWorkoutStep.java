@@ -1,6 +1,7 @@
 package com.cutlerdevelopment.helensworkouts.model.workout_steps;
 
 import com.cutlerdevelopment.helensworkouts.model.Exercise;
+import com.cutlerdevelopment.helensworkouts.model.Workout;
 import com.cutlerdevelopment.helensworkouts.model.WorkoutTemplate;
 import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableField;
 import com.cutlerdevelopment.helensworkouts.model.saveables.AbstractSaveableItem;
@@ -23,11 +24,17 @@ public class TemplateWorkoutStep extends AbstractSaveableItem {
         this.exercise = exercise;
     }
 
-    private WorkoutTemplate workout;
-    public WorkoutTemplate getWorkout() {
-        return workout;
+    private WorkoutTemplate template;
+    public WorkoutTemplate getTemplate() {
+        return template;
     }
-    public void setWorkout(WorkoutTemplate workout) {
+    public void setTemplate(WorkoutTemplate workout) {
+        this.template = workout;
+    }
+
+    private Workout workout;
+    public Workout getWorkout() { return workout;}
+    public void setWorkout(Workout workout) {
         this.workout = workout;
     }
 
@@ -48,19 +55,19 @@ public class TemplateWorkoutStep extends AbstractSaveableItem {
     }
     public SaveableInt getSetNumberField() { return setNumber;}
 
-    public TemplateWorkoutStep(int setNumber, int positionInWorkout, Exercise exercise, WorkoutTemplate workout) {
+    public TemplateWorkoutStep(int setNumber, int positionInWorkout, Exercise exercise, WorkoutTemplate template) {
         super(exercise.getName());
         this.exercise = exercise;
         this.positionInWorkout = new SaveableInt(POS_IN_WORKOUT_FIRESTORE_KEY, positionInWorkout);
         this.setNumber = new SaveableInt(SET_NUMBER_FIRESTORE_KEY, setNumber);
-        this.workout = workout;
+        this.template = template;
     }
-    public TemplateWorkoutStep(String id, int setNumber,  int positionInWorkout, Exercise exercise, WorkoutTemplate workout) {
+    public TemplateWorkoutStep(String id, int setNumber,  int positionInWorkout, Exercise exercise, WorkoutTemplate template) {
         super(id, exercise.getName());
         this.exercise = exercise;
         this.positionInWorkout = new SaveableInt(POS_IN_WORKOUT_FIRESTORE_KEY, positionInWorkout);
         this.setNumber = new SaveableInt(SET_NUMBER_FIRESTORE_KEY, setNumber);
-        this.workout = workout;
+        this.template = template;
     }
 
     @Override
@@ -74,7 +81,7 @@ public class TemplateWorkoutStep extends AbstractSaveableItem {
         fields.add(new SaveableString(EXERCISE_ID_FIRESTORE_KEY, exercise.getId()));
         fields.add(setNumber);
         fields.add(positionInWorkout);
-        fields.add(new SaveableString(WORKOUT_ID_FIRESTORE_KEY, workout.getId()));
+        fields.add(new SaveableString(WORKOUT_ID_FIRESTORE_KEY, template.getId()));
         return fields;
     }
 }

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/dark_blue"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/repsStepPosText"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/repsStepExerciseText"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="@color/yellow"
+        android:gravity="center"
+        android:textStyle="bold">
+    </TextView>
+
+    <TextView
+        android:id="@+id/repsStepExerciseText"
+        android:layout_width="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_height="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/yellow"
+        android:gravity="center_vertical"
+        android:textSize="15sp"
+        android:textStyle="bold">
+    </TextView>
+
+    <EditText
+        android:id="@+id/repsStepRepsEditText"
+        android:layout_width="60dp"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@color/blue"
+        android:textColor="@color/yellow"
+        android:textSize="15sp"
+        android:inputType="number"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/repsStepExerciseText"
+        app:layout_constraintStart_toEndOf="@+id/repsStepPosText"
+        app:layout_constraintBottom_toBottomOf="parent" >
+    </EditText>
+
+    <TextView
+        android:id="@+id/timedStepSecs"
+        android:layout_width="35dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="4dp"
+        app:layout_constraintStart_toEndOf="@+id/repsStepRepsEditText"
+        app:layout_constraintBottom_toBottomOf="@+id/repsStepRepsEditText"
+        android:textColor="@color/yellow"
+        android:gravity="center_vertical"
+        android:textSize="13sp"
+        android:text="reps"
+        android:textStyle="bold">
+    </TextView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

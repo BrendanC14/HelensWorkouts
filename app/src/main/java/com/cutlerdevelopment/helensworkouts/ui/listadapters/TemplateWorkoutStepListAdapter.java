@@ -98,9 +98,9 @@ public class TemplateWorkoutStepListAdapter extends BaseExpandableListAdapter {
             childViewHolder.firstText.setText(String.valueOf(repsStep.getMinReps()));
             childViewHolder.secondText.setText(String.valueOf(repsStep.getMaxReps()));
         } else {
-            TimedTemplateWorkoutStep timedStep = (TimedTemplateWorkoutStep) step;
-            childViewHolder.firstText.setText(String.valueOf(timedStep.getMinutes()));
-            childViewHolder.secondText.setText(String.valueOf(timedStep.getSeconds()));
+            TimedTemplateWorkoutStep timedTemplate = (TimedTemplateWorkoutStep) step;
+            childViewHolder.firstText.setText(String.valueOf(timedTemplate.getMinutes()));
+            childViewHolder.secondText.setText(String.valueOf(timedTemplate.getSeconds()));
         }
 
         return convertView;
@@ -196,17 +196,17 @@ public class TemplateWorkoutStepListAdapter extends BaseExpandableListAdapter {
 
         ChildViewHolder(ExerciseType type, View v) {
             if (type == ExerciseType.REPS || type == ExerciseType.WEIGHT) {
-                this.positionText = v.findViewById(R.id.repsStepPosText);
-                this.exerciseText = v.findViewById(R.id.repsStepExerciseText);
-                this.firstText = v.findViewById(R.id.repsStepMinEditText);
-                this.secondText = v.findViewById(R.id.repsStepsMaxEditText);
-                this.deleteButton = v.findViewById(R.id.repsStepDeleteButton);
+                this.positionText = v.findViewById(R.id.repsTemplatePosText);
+                this.exerciseText = v.findViewById(R.id.repsTemplateExerciseText);
+                this.firstText = v.findViewById(R.id.repsTemplateMinEditText);
+                this.secondText = v.findViewById(R.id.repsTemplatesMaxEditText);
+                this.deleteButton = v.findViewById(R.id.repsTemplateDeleteButton);
             } else {
-                this.positionText = v.findViewById(R.id.timedStepPosText);
-                this.exerciseText = v.findViewById(R.id.timedStepExerciseText);
-                this.firstText = v.findViewById(R.id.timedStepMinEditText);
-                this.secondText = v.findViewById(R.id.timedStepSecsEditText);
-                this.deleteButton = v.findViewById(R.id.timedStepDeleteButton);
+                this.positionText = v.findViewById(R.id.timedTemplatePosText);
+                this.exerciseText = v.findViewById(R.id.timedTemplateExerciseText);
+                this.firstText = v.findViewById(R.id.timedTemplateMinEditText);
+                this.secondText = v.findViewById(R.id.timedTemplateSecsEditText);
+                this.deleteButton = v.findViewById(R.id.timedTemplateDeleteButton);
             }
             this.firstText.setEnabled(false);
             this.firstText.setBackgroundResource(R.color.blue);

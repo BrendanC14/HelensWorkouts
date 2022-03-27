@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/repsStepPosText"
+        android:id="@+id/repsTemplatePosText"
         android:layout_width="25dp"
         android:layout_height="match_parent"
         android:layout_marginStart="8dp"
@@ -21,13 +21,13 @@
     </TextView>
 
     <TextView
-        android:id="@+id/repsStepExerciseText"
+        android:id="@+id/repsTemplateExerciseText"
         android:layout_width="100dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:layout_height="match_parent"
-        app:layout_constraintStart_toEndOf="@+id/repsStepPosText"
+        app:layout_constraintStart_toEndOf="@+id/repsTemplatePosText"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:textColor="@color/yellow"
@@ -37,7 +37,7 @@
     </TextView>
 
     <EditText
-        android:id="@+id/repsStepMinEditText"
+        android:id="@+id/repsTemplateMinEditText"
         android:layout_width="50dp"
         android:layout_height="30dp"
         android:gravity="center"
@@ -48,19 +48,19 @@
         android:textColor="@color/yellow"
         android:textSize="11sp"
         android:inputType="number"
-        app:layout_constraintStart_toEndOf="@+id/repsStepExerciseText"
+        app:layout_constraintStart_toEndOf="@+id/repsTemplateExerciseText"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" >
     </EditText>
 
     <TextView
-        android:id="@+id/repsStepDash"
+        android:id="@+id/repsTemplateDash"
         android:layout_width="10dp"
         android:layout_height="match_parent"
         android:layout_marginStart="8dp"
-        app:layout_constraintTop_toTopOf="@+id/repsStepMinEditText"
-        app:layout_constraintStart_toEndOf="@+id/repsStepMinEditText"
-        app:layout_constraintBottom_toBottomOf="@+id/repsStepMinEditText"
+        app:layout_constraintTop_toTopOf="@+id/repsTemplateMinEditText"
+        app:layout_constraintStart_toEndOf="@+id/repsTemplateMinEditText"
+        app:layout_constraintBottom_toBottomOf="@+id/repsTemplateMinEditText"
         android:textColor="@color/yellow"
         android:gravity="center"
         android:textSize="12sp"
@@ -69,7 +69,7 @@
     </TextView>
 
     <EditText
-        android:id="@+id/repsStepsMaxEditText"
+        android:id="@+id/repsTemplatesMaxEditText"
         android:layout_width="50dp"
         android:layout_height="30dp"
         android:gravity="center"
@@ -80,13 +80,13 @@
         android:textColor="@color/yellow"
         android:textSize="11sp"
         android:inputType="number"
-        app:layout_constraintStart_toEndOf="@+id/repsStepDash"
+        app:layout_constraintStart_toEndOf="@+id/repsTemplateDash"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" >
     </EditText>
 
     <Button
-        android:id="@+id/repsStepDeleteButton"
+        android:id="@+id/repsTemplateDeleteButton"
         android:layout_width="37dp"
         android:layout_height="40dp"
         app:layout_constraintTop_toTopOf="parent"
