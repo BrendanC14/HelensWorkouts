@@ -118,4 +118,9 @@ public class ExercisesDialogFragment extends AbstractSaveableItemDialogFragment 
     public void templateRetrievedForDate(Date date, WorkoutTemplate template) {
 
     }
+
+    @Override
+    public void templateDeleted(WorkoutTemplate template) {
+
+    }
 }

@@ -86,6 +86,20 @@ public class WorkoutFirestoreHandler extends AbstractFirestoreHandler {
 
     }
 
+    public void deleteTemplate(WorkoutTemplate template) {
+        this.deleteDocument(template, templateCollectionReference.document(template.getId()));
+    }
+
+    @Override
+    protected void documentDeleted(AbstractSaveableItem item) {
+        notifications.trigger((IWorkoutFirestoreListener listener) -> listener.templateDeleted((WorkoutTemplate) item));
+
+    }
+
+    protected  void templateDeleted(WorkoutTemplate template) {
+        notifications.trigger((IWorkoutFirestoreListener listener) -> listener.templateDeleted(template));
+    }
+
     public void getTemplateWithName(String name) {
         retrieveDocument(templateCollectionReference, name);
     }

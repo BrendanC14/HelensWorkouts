@@ -75,6 +75,11 @@ public class ExerciseFirestoreHandler extends AbstractFirestoreHandler{
     }
 
     @Override
+    protected void documentDeleted(AbstractSaveableItem item) {
+
+    }
+
+    @Override
     protected void collectionRetrieved(QuerySnapshot result, AbstractSaveableItem parent) {
         MyList<Exercise> items = new MyList<>();
         for (DocumentSnapshot documentSnapshot : result) {
@@ -98,7 +103,7 @@ public class ExerciseFirestoreHandler extends AbstractFirestoreHandler{
         String weightString = documentSnapshot.getString(Exercise.RECORD_WEIGHT_FIRESTORE_KEY);
         BigDecimal recordWeight = weightString == "" || weightString == null
                 ? BigDecimal.ZERO
-                : BigDecimal.valueOf(Integer.parseInt(weightString));
+                : BigDecimal.valueOf(Double.parseDouble(weightString));
         if (name == null) return null;
         ExerciseType type = ExerciseType.valueOf(documentSnapshot.getString(Exercise.TYPE_FIRESTORE_KEY));
         return new Exercise(documentSnapshot.getId(), name, type, recordWeight);

@@ -3,12 +3,17 @@ package com.cutlerdevelopment.helensworkouts.ui;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.media.AudioAttributes;
+import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class CompleteWorkoutActivity extends AppCompatActivity {
 
@@ -176,15 +182,37 @@ public class CompleteWorkoutActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 timerTextView.setText("");
-                final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
-                tg.startTone(ToneGenerator.TONE_DTMF_0);
-                final Handler handler = new Handler(Looper.getMainLooper());
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        tg.stopTone();
-                    }
-                }, 500);
+                final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                AudioManager.OnAudioFocusChangeListener afChangeListener =
+                        focusChange -> {
+                            if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                                tg.stopTone();
+                            }
+                            else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                                tg.stopTone();
+                            } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+                            } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+                            }
+                        };
+
+                AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
+                AudioFocusRequest focusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+                        .setOnAudioFocusChangeListener(afChangeListener)
+                        .build();
+                int result = am.requestAudioFocus(focusRequest);
+
+                if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                    final Handler handler = new Handler(Looper.getMainLooper());
+                    tg.startTone(ToneGenerator.TONE_DTMF_0);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            tg.stopTone();
+                            am.abandonAudioFocusRequest(focusRequest);
+                        }
+                    }, 1000);
+                }
+
             }
         }.start();
 
@@ -258,9 +286,12 @@ public class CompleteWorkoutActivity extends AppCompatActivity {
         }
         String weight = weightText.getText().toString();
         if (!weight.equals("")) {
-            BigDecimal weightDecimal = BigDecimal.valueOf(Integer.parseInt(weight));
+            BigDecimal weightDecimal = BigDecimal.valueOf(Double.parseDouble(weight));
             step.setActualWeight(weightDecimal);
-            if (weightDecimal.compareTo(step.getExercise().getRecordWeight()) > 0) {
+            boolean newRecord = step.getExercise().lowerIsBetter()
+                    ? weightDecimal.compareTo(step.getExercise().getRecordWeight()) < 0
+                    : weightDecimal.compareTo(step.getExercise().getRecordWeight()) > 0;
+            if (newRecord) {
                 Exercise exercise = step.getExercise();
                 exercise.setRecordWeight(weightDecimal);
                 MyList<AbstractSaveableField> fields = new MyList<>(exercise.getRecordWeightField());

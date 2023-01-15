@@ -13,6 +13,7 @@ public interface IDataListener {
     void allTemplatesRetrieved(MyList<WorkoutTemplate> templates);
     void templateAdded(WorkoutTemplate workout);
     void templateChanged(WorkoutTemplate template);
+    void templateDeleted(WorkoutTemplate template);
     void workoutAdded(Workout workout);
     void workoutChanged(Workout workout);
 

@@ -24,6 +24,8 @@ import com.cutlerdevelopment.helensworkouts.ui.dialog_fragments.WorkoutTemplates
 import com.cutlerdevelopment.helensworkouts.utils.DateUtil;
 import com.cutlerdevelopment.helensworkouts.utils.MyList;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -95,7 +97,12 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
             templateNames.add(name);
             templatesByNameMap.put(name, template);
         }
+        //Collections.sort(templateNames);
+        setDateSpinners();
 
+    }
+
+    private void setDateSpinners() {
         for (Map.Entry<Date, Spinner> spinnerDatePair : spinnerByDateMap.entrySet()) {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, templateNames);
             Spinner spinner = spinnerDatePair.getValue();
@@ -176,5 +183,10 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         if (spinner != null) {
             spinner.setSelection(templateNames.indexOf(template.getName()));
         }
+    }
+
+    @Override
+    public void templateDeleted(WorkoutTemplate template) {
+        templateNames.remove(template.getName());
     }
 }

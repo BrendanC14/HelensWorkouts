@@ -47,6 +47,10 @@ public class Exercise extends AbstractSaveableItem {
         return fields;
     }
 
+    public boolean lowerIsBetter() {
+        return this.getName().equals("Assisted Pull Ups");
+    }
+
     public static Exercise getRestExercise() {
         return new Exercise("Rest", ExerciseType.REST);
     }

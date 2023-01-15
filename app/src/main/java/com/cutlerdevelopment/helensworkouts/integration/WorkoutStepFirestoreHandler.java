@@ -126,13 +126,18 @@ public class WorkoutStepFirestoreHandler extends AbstractFirestoreHandler{
     }
 
     @Override
+    protected void documentDeleted(AbstractSaveableItem item) {
+
+    }
+
+    @Override
     protected void failedToRetrieveCollection(String documentName, Exception e) {
 
         notifications.trigger((IWorkoutFirestoreListener listener) -> listener.failedToRetrieveTemplateSteps(documentName, e));
     }
 
     public void deleteStep(TemplateWorkoutStep step) {
-        this.deleteDocument(getStepsCollectionReference(step.getTemplate()).document(step.getId()));
+        this.deleteDocument(step, getStepsCollectionReference(step.getTemplate()).document(step.getId()));
     }
 
     @Override
@@ -215,7 +220,7 @@ public class WorkoutStepFirestoreHandler extends AbstractFirestoreHandler{
             int minReps = documentSnapshot.getLong(WeightWorkoutStep.MIN_REPS_FIRESTORE_KEY).intValue();
             int maxReps = documentSnapshot.getLong(WeightWorkoutStep.MAX_REPS_FIRESTORE_KEY).intValue();
             int actualReps = documentSnapshot.getLong(WeightWorkoutStep.ACTUAL_REPS_FIRESTORE_KEY).intValue();
-            BigDecimal actualWeight = BigDecimal.valueOf(Integer.parseInt(documentSnapshot.getString(WeightWorkoutStep.ACTUAL_WEIGHT_FIRESTORE_KEY)));
+            BigDecimal actualWeight = BigDecimal.valueOf(Double.parseDouble(documentSnapshot.getString(WeightWorkoutStep.ACTUAL_WEIGHT_FIRESTORE_KEY)));
             return new WeightWorkoutStep(
                     documentSnapshot.getId(),
                     set,

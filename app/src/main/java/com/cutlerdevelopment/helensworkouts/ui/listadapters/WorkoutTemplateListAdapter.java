@@ -34,12 +34,20 @@ public class WorkoutTemplateListAdapter extends BaseAdapter {
     public WorkoutTemplateListAdapter(Context context, FragmentManager fragmentManager) {
         super();
         templates.addAll(DataHolder.getInstance().getAllTemplates());
+        templates.sort(Comparator.comparing(WorkoutTemplate::getName));
         this.fragmentManager = fragmentManager;
         inflater = LayoutInflater.from(context);
     }
 
     public void addTemplate(WorkoutTemplate template) {
         templates.add(template);
+        templates.sort(Comparator.comparing(WorkoutTemplate::getName));
+        notifyDataSetChanged();
+    }
+
+    public void removeTemplate(WorkoutTemplate template) {
+        templates.remove(template);
+        templates.sort(Comparator.comparing(WorkoutTemplate::getName));
         notifyDataSetChanged();
     }
 

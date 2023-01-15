@@ -30,7 +30,7 @@ public class DateUtil {
 
     public static String getDateWithSuffix(int day) {
         if (day >= 11 && day <= 13) {
-            return "th";
+            return day + "th";
         }
         switch (day % 10) {
             case 1:  return day + "st";

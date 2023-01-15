@@ -65,6 +65,11 @@ public class WorkoutTemplatesDialogFragment extends AbstractSaveableItemDialogFr
     }
 
     @Override
+    public void templateDeleted(WorkoutTemplate template) {
+        adapter.removeTemplate(template);
+    }
+
+    @Override
     public void workoutAdded(Workout workout) {
 
     }

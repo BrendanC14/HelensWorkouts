@@ -68,9 +68,12 @@ public abstract class AbstractFirestoreHandler {
     protected abstract void documentUpdated(AbstractSaveableItem item);
     protected abstract void failedToUpdateDocument(AbstractSaveableItem item, Exception e);
 
-    protected void deleteDocument(DocumentReference reference) {
-        reference.delete();
+    protected void deleteDocument(AbstractSaveableItem item, DocumentReference reference) {
+
+        reference.delete()
+        .addOnSuccessListener(result -> documentDeleted(item));
     }
+    protected  abstract  void documentDeleted(AbstractSaveableItem item);
 
     protected abstract AbstractSaveableItem convertDocumentToItem(DocumentSnapshot documentSnapshot);
 }

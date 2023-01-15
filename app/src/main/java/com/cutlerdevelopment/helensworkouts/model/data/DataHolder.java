@@ -176,6 +176,19 @@ public class DataHolder implements IExerciseFirestoreListener, IWorkoutFirestore
         notifications.trigger((IDataListener listener) -> listener.templateChanged(template));
     }
 
+    public void deleteTemplate(WorkoutTemplate template) {
+        for (TemplateWorkoutStep step : template.getTemplateSteps()) {
+            templateStepFirestoreHandler.deleteStep(step);
+        }
+        templateFirestoreHandler.deleteTemplate(template);
+    }
+
+    @Override
+    public void templateDeleted(WorkoutTemplate template) {
+        notifications.trigger((IDataListener listener) -> listener.templateDeleted(template));
+
+    }
+
     @Override
     public void failedToUpdateTemplate(WorkoutTemplate template, Exception e) {
 

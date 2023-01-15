@@ -10,6 +10,7 @@ public interface IWorkoutFirestoreListener {
     void failedToSaveTemplate(WorkoutTemplate template, Exception e);
     void templateUpdated(WorkoutTemplate template);
     void failedToUpdateTemplate(WorkoutTemplate template, Exception e);
+    void templateDeleted(WorkoutTemplate template);
     void templateRetrieved(WorkoutTemplate template);
     void failedToRetrieveTemplate(String workoutName, Exception e);
     void templatesRetrieved(MyList<WorkoutTemplate> templates);

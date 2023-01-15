@@ -58,6 +58,7 @@ public class EditWorkoutTemplateDialogFragment extends DialogFragment
         stepLayout = templateFragment.findViewById(R.id.editTemplateLayout);
         templateFragment.findViewById(R.id.editTemplateSaveButton).setOnClickListener(view -> saveChanges());
         templateFragment.findViewById(R.id.editTemplateAddStepsButton).setOnClickListener(view -> openAddStepsFragment());
+        templateFragment.findViewById(R.id.editTemplateDeleteButton).setOnClickListener(view -> deleteTemplate());
         templateFragment.findViewById(R.id.editTemplateCancelButton).setOnClickListener(view -> dismiss());
         nameText.setText(template.getName());
         adapter = new TemplateWorkoutStepListAdapter(getContext(), template, this);
@@ -175,6 +176,24 @@ public class EditWorkoutTemplateDialogFragment extends DialogFragment
         for (Map.Entry<TemplateWorkoutStep, MyList<AbstractSaveableField>> stepFieldsPair : updatedSteps.entrySet()) {
             DataHolder.getInstance().updateTemplateStep(stepFieldsPair.getKey(), stepFieldsPair.getValue());
         }
+    }
+
+    public void deleteTemplate() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.MyDialogTheme);
+        builder.setTitle("Delete");
+        builder.setMessage("Are you sure you want to delete " + template.getName() + "??");
+        builder.setPositiveButton("YES", (dialog, which) -> {
+            DataHolder.getInstance().deleteTemplate(template);
+            close();
+        });
+        builder.setNegativeButton("NO", (dialog, which) -> {
+            dialog.dismiss();
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+        alert.getButton(alert.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.yellow));
+        alert.getButton(alert.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.yellow));
+
     }
 
     @Override
